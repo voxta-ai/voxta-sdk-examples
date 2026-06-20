@@ -1,0 +1,89 @@
+# DotNet
+bin/
+obj/
+publish/
+
+# NuGet
+/nuget/
+/cloud/
+
+# Python
+__pycache__/
+*.pyc
+
+# Local
+PrivateLocalTests.cs
+appsettings.Development.json
+
+# Silero
+src/server/Voxta.Server/latest_silero_models.yml
+
+# Published app
+src/server/Voxta.Server/wwwroot/
+
+# Data
+src/server/Voxta.Server/Data/*
+!src/server/Voxta.Server/Data/README.txt
+!src/server/Voxta.Server/Data/appsettings.User.json
+!src/server/Voxta.Server/Data/Audio
+src/server/Voxta.Server/Data/Audio/VoiceSamples
+src/server/Voxta.Server/Data/Audio/Typewriter/*
+!src/server/Voxta.Server/Data/Audio/Typewriter/README.txt
+!src/server/Voxta.Server/Data/Benchmarks
+src/server/Voxta.Server/Data/Benchmarks/*
+!src/server/Voxta.Server/Data/Benchmarks/README.txt
+!src/server/Voxta.Server/Data/Logs
+src/server/Voxta.Server/Data/Logs/*
+!src/server/Voxta.Server/Data/Logs/README.txt
+!src/server/Voxta.Server/Data/Formatting
+src/server/Voxta.Server/Data/Formatting/*
+!src/server/Voxta.Server/Data/Formatting/README.txt
+
+## Users
+!src/server/Voxta.Server/Data/Users
+src/server/Voxta.Server/Data/Users/*
+!src/server/Voxta.Server/Data/Users/README.txt
+
+# LiteDB / SQLite
+*.db
+
+# Visual Studio
+*.user
+
+# JetBrains Rider
+# Covers user-specific files but allows project shared settings.
+# See https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/**/usage.statistics.xml
+**/.idea/**/shelf/
+**/.idea/**/dictionaries/
+**/.idea/**/aws.xml
+**/.idea/**/watcherTasks.xml
+**/.idea/**/riderModule.iml
+**/.idea/**/jsLibraryMappings.xml
+
+# Rider-specific files (for .NET)
+**/project.razor.json
+
+# Sensitive or high-churn files
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+**/.idea/**/uiDesigner.xml
+
+# Editor-based HTTP Client
+**/.idea/**/httpRequests/
+**/http-client.private.env.json
+
+# Tests
+tests/output/*
+/.idea/.idea.Voxta.Server/.idea/copilotDiffState.xml
+/.idea/.idea.Voxta.Server/.idea/copilot.data.migration.agent.xml
+
+# Nx Console
+/.idea/.idea.Voxta.Server/.idea/nx-angular-config.xml
+/.idea/.idea.Voxta.Server/.idea/nx-console.xml
+settings.local.json
+src/mobile/Voxta.MobileApp/Assets/wwwroot/

@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Voxta.ConsoleChat/Voxta.ConsoleChat.csproj" />
+  <Project Path="Voxta.SampleProviderApp/Voxta.SampleProviderApp.csproj" />
+  <Project Path="Voxta.Modules.Examples.ChatAugmentationExample/Voxta.Modules.Examples.ChatAugmentationExample.csproj" />
+</Solution>
