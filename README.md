@@ -8,7 +8,7 @@ the SDK packages directly — clone it, point it at a running Voxta Server, and 
 
 | Project | What it shows |
 | --- | --- |
-| [`Voxta.ConsoleChat`](Voxta.ConsoleChat) | A minimal console client that connects to Voxta, sends and receives messages, and plays back audio. |
+| [`Voxta.ConsoleChat`](Voxta.ConsoleChat) | A terminal UI client that connects to Voxta, lets you pick a character, then chat with text, speech recognition, and audio playback. |
 | [`Voxta.SampleProviderApp`](Voxta.SampleProviderApp) | A provider app that extends a live session: register actions, react to messages, update context, and send messages on behalf of the user. |
 | [`Voxta.Modules.Examples.ChatAugmentationExample`](Voxta.Modules.Examples.ChatAugmentationExample) | A server-side module (chat augmentation) packaged with the `Voxta.Sdk.Modules` SDK. |
 
