@@ -21,6 +21,13 @@ internal static class Tui
 
     public static void Invoke(Action action) => Application.Invoke(action);
 
+    public static object? AddTimeout(TimeSpan interval, Func<bool> callback) => Application.AddTimeout(interval, callback);
+
+    public static void RemoveTimeout(object? token)
+    {
+        if (token != null) Application.RemoveTimeout(token);
+    }
+
     public static bool Confirm(View owner, string title, string message) =>
         MessageBox.Query(owner.App!, title, message, "Yes", "No") == 0;
 

@@ -4,12 +4,11 @@ namespace Voxta.ConsoleChat.Persistence;
 
 public class FileLastChatStore : ILastChatStore
 {
-    private static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Voxta.ConsoleChat", "last-chat.json");
+    private static readonly string FilePath = AppData.File("last-chat.json");
 
     public void Save(LastChat lastChat)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
+        Directory.CreateDirectory(AppData.Directory);
         File.WriteAllText(FilePath, JsonSerializer.Serialize(lastChat));
     }
 

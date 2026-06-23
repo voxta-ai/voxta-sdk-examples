@@ -1,0 +1,19 @@
+{
+  "$type": "scenario",
+  "Id": "b6f3c2a1-0d4e-4c8b-9a7e-1f2b3c4d5e6f",
+  "Name": "Console Chat",
+  "Version": "1.0.0",
+  "Client": "Voxta.ConsoleChat",
+  "Creator": "Voxta.ConsoleChat",
+  "Description": "Runs the character inside a terminal / command line application.",
+  "ExplicitContent": false,
+  "ChatFlow": 0,
+  "ChatStyle": 3,
+  "AppControlled": true,
+  "Template": "{{ char }} exists inside a command line. {{ char }} is being prompted by {{ user }} inside the terminal. {{ char }} can speak and run commands.",
+  "Actions": [],
+  "Events": [],
+  "MemoryBooks": [],
+  "Roles": [],
+  "Contexts": []
+}

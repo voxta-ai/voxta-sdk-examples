@@ -6,14 +6,15 @@ namespace Voxta.ConsoleChat.Presentation.Tui;
 
 internal static class StatusScreen
 {
-    public static Task RunAsync(string message, Func<IConnectionProgress, CancellationToken, Task> work, CancellationToken cancellationToken)
+    // Shows connection progress (status + device code) while connecting/authenticating.
+    public static Task RunConnectAsync(string message, Func<IProgress<ConnectionProgress>, CancellationToken, Task> work, CancellationToken cancellationToken)
     {
         var status = new Label { X = 1, Y = 1, Width = Dim.Fill(), Text = message };
         var code = new Label { X = 1, Y = 3, Width = Dim.Fill(), Height = Dim.Fill(), Text = "" };
         var window = new Window { Title = "Voxta Console Chat" };
         window.Add(status, code);
 
-        var progress = new LabelProgress(status, code);
+        var progress = new ConnectProgress(status, code);
         return RunCoreAsync(window, async token =>
         {
             await work(progress, token);
@@ -21,7 +22,8 @@ internal static class StatusScreen
         }, cancellationToken);
     }
 
-    public static Task<T> RunAsync<T>(string message, Func<CancellationToken, Task<T>> work, CancellationToken cancellationToken)
+    // Shows a message while a piece of work runs, returning its result.
+    public static Task<T> RunBusyAsync<T>(string message, Func<CancellationToken, Task<T>> work, CancellationToken cancellationToken)
     {
         var window = new Window { Title = "Voxta Console Chat" };
         window.Add(new Label { X = 1, Y = 1, Width = Dim.Fill(), Text = message });
@@ -46,11 +48,13 @@ internal static class StatusScreen
         return error is null ? Task.FromResult(result) : Task.FromException<T>(error);
     }
 
-    private sealed class LabelProgress(Label status, Label code) : IConnectionProgress
+    private sealed class ConnectProgress(Label status, Label code) : IProgress<ConnectionProgress>
     {
-        public void Status(string message) => Tui.Invoke(() => status.Text = message);
-
-        public void DeviceCode(string userCode, string verificationUrl) =>
-            Tui.Invoke(() => code.Text = $"Code: {userCode}\nURL:  {verificationUrl}");
+        public void Report(ConnectionProgress value) => Tui.Invoke(() =>
+        {
+            status.Text = value.Status;
+            if (value.DeviceCode != null)
+                code.Text = $"Code: {value.DeviceCode}\nURL:  {value.DeviceUrl}";
+        });
     }
 }

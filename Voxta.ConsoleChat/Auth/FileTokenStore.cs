@@ -5,14 +5,12 @@ namespace Voxta.ConsoleChat.Auth;
 
 public class FileTokenStore : ITokenStore
 {
-    private static readonly string Directory_ = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Voxta.ConsoleChat");
-    private static readonly string FilePath = Path.Combine(Directory_, "token.dat");
+    private static readonly string FilePath = AppData.File("token.dat");
 
     public void Save(string token)
     {
 #if WINDOWS
-        Directory.CreateDirectory(Directory_);
+        Directory.CreateDirectory(AppData.Directory);
         var protectedToken = ProtectedData.Protect(Encoding.UTF8.GetBytes(token), null, DataProtectionScope.CurrentUser);
         File.WriteAllBytes(FilePath, protectedToken);
 #endif
@@ -27,6 +25,7 @@ public class FileTokenStore : ITokenStore
         var token = ProtectedData.Unprotect(protectedToken, null, DataProtectionScope.CurrentUser);
         return Encoding.UTF8.GetString(token);
 #else
+        // ProtectedData is Windows-only; other platforms re-authenticate each run.
         return null;
 #endif
     }

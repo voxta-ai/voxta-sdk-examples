@@ -10,20 +10,23 @@ public sealed class TuiChatView : IChatView, IDisposable
 
     public void Dispose() => Tui.Shutdown();
 
-    public Task ConnectAsync(Func<IConnectionProgress, CancellationToken, Task> connect, CancellationToken cancellationToken) =>
-        StatusScreen.RunAsync("Connecting to Voxta...", connect, cancellationToken);
-
-    public Task<T> RunWhileBusyAsync<T>(string message, Func<CancellationToken, Task<T>> work, CancellationToken cancellationToken) =>
-        StatusScreen.RunAsync(message, work, cancellationToken);
+    public Task ConnectAsync(Func<IProgress<ConnectionProgress>, CancellationToken, Task> connect, CancellationToken cancellationToken) =>
+        StatusScreen.RunConnectAsync("Connecting to Voxta...", connect, cancellationToken);
 
     public Task<MainMenuChoice> ShowMainMenuAsync(LastChat? lastChat, CancellationToken cancellationToken) =>
         MainMenuScreen.RunAsync(lastChat, cancellationToken);
 
-    public Task<CharactersItemResponse?> SelectCharacterAsync(IReadOnlyList<CharactersItemResponse> characters, CancellationToken cancellationToken) =>
-        CharacterSelectScreen.RunAsync(characters, cancellationToken);
+    public async Task<CharactersItemResponse?> SelectCharacterAsync(Func<CancellationToken, Task<IReadOnlyList<CharactersItemResponse>>> loadCharacters, CancellationToken cancellationToken)
+    {
+        var characters = await StatusScreen.RunBusyAsync("Loading characters...", loadCharacters, cancellationToken);
+        return await CharacterSelectScreen.RunAsync(characters, cancellationToken);
+    }
 
-    public Task<ChatChoice?> SelectChatAsync(string characterName, IReadOnlyList<ChatItemResponse> chats, CancellationToken cancellationToken) =>
-        SelectChatScreen.RunAsync(characterName, chats, cancellationToken);
+    public async Task<ChatChoice?> SelectChatAsync(string characterName, Func<CancellationToken, Task<IReadOnlyList<ChatItemResponse>>> loadChats, CancellationToken cancellationToken)
+    {
+        var chats = await StatusScreen.RunBusyAsync($"Loading chats with {characterName}...", loadChats, cancellationToken);
+        return await SelectChatScreen.RunAsync(characterName, chats, cancellationToken);
+    }
 
     public Task<ChatSession> StartChatAsync(Func<IProgress<LoadingUpdate>, CancellationToken, Task<ChatSession>> work, CancellationToken cancellationToken) =>
         LoadingScreen.RunAsync(work, cancellationToken);

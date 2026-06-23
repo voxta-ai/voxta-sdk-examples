@@ -1,4 +1,4 @@
-using Voxta.ConsoleChat.Api;
+using Voxta.Client;
 using Voxta.ConsoleChat.Persistence;
 using Voxta.ConsoleChat.Presentation;
 using Voxta.ConsoleChat.Session;
@@ -7,19 +7,25 @@ namespace Voxta.ConsoleChat.Hosting;
 
 public class ChatAppHost(
     VoxtaConnection connection,
-    CharactersApiClient charactersApi,
-    ChatsApiClient chatsApi,
+    IVoxtaApiClientFactory apiClientFactory,
+    VoxtaTokenProvider tokenProvider,
     ILastChatStore lastChatStore,
     IChatView view)
 {
-    public async Task RunAsync(CancellationToken cancellationToken)
+    private readonly IVoxtaApiClient _api = apiClientFactory.Create(tokenProvider);
+
+    public async Task RunAsync(bool resumeImmediately, CancellationToken cancellationToken)
     {
         await view.ConnectAsync(connection.ConnectAsync, cancellationToken);
 
+        var resume = resumeImmediately;
         while (!cancellationToken.IsCancellationRequested)
         {
             var lastChat = lastChatStore.Load();
-            var choice = await view.ShowMainMenuAsync(lastChat, cancellationToken);
+            var choice = resume && lastChat != null
+                ? MainMenuChoice.ContinueLastChat
+                : await view.ShowMainMenuAsync(lastChat, cancellationToken);
+            resume = false;
             if (choice == MainMenuChoice.Quit) break;
 
             var session = choice == MainMenuChoice.ContinueLastChat && lastChat != null
@@ -34,12 +40,10 @@ public class ChatAppHost(
 
     private async Task<ChatSession?> BrowseAndStartAsync(CancellationToken cancellationToken)
     {
-        var characters = await view.RunWhileBusyAsync("Loading characters...", charactersApi.GetCharactersAsync, cancellationToken);
-        var character = await view.SelectCharacterAsync(characters, cancellationToken);
+        var character = await view.SelectCharacterAsync(token => _api.Characters.GetCharactersAsync(cancellationToken: token), cancellationToken);
         if (character == null) return null;
 
-        var chats = await view.RunWhileBusyAsync("Loading chats...", token => chatsApi.GetChatsAsync(character.Id, token), cancellationToken);
-        var choice = await view.SelectChatAsync(character.Name, chats, cancellationToken);
+        var choice = await view.SelectChatAsync(character.Name, token => _api.Chats.GetChatsAsync(character.Id, token), cancellationToken);
         if (choice == null) return null;
 
         return choice.IsNew

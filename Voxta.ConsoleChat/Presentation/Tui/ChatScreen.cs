@@ -11,20 +11,26 @@ namespace Voxta.ConsoleChat.Presentation.Tui;
 internal static class ChatScreen
 {
     private const int BubbleWidthPercent = 75;
+    private const string SpinnerFrames = "|/-\\";
 
     public static Task RunAsync(ChatSession session, CancellationToken cancellationToken)
     {
         var window = new Window { Title = $"Chatting with {session.CharacterName} — Esc or Ctrl+C to leave" };
 
         var lines = new ObservableCollection<string>();
-        var roles = new List<ChatRole>();
+        var roles = new List<TranscriptRole>();
+        var styles = new List<TextStyle>();
+        var spinner = 0;
+        TranscriptEntry? revealingEntry = null; // the character line currently being typed out
+        var revealed = 0;                       // how many of its characters are shown so far
 
         var transcript = new ListView { X = 0, Y = 0, Width = Dim.Fill(), Height = Dim.Fill(2), CanFocus = false };
         transcript.SetSource(lines);
         transcript.RowRender += (_, e) =>
         {
-            if (e.Row < roles.Count)
-                e.RowAttribute = new Terminal.Gui.Drawing.Attribute(ColorFor(roles[e.Row]), transcript.GetAttributeForRole(VisualRole.Normal).Background);
+            if (e.Row >= roles.Count) return;
+            var background = transcript.GetAttributeForRole(VisualRole.Normal).Background;
+            e.RowAttribute = new Terminal.Gui.Drawing.Attribute(ColorFor(roles[e.Row]), background, styles[e.Row]);
         };
 
         var status = new Label { X = 0, Y = Pos.AnchorEnd(2), Width = Dim.Fill(), Text = "" };
@@ -32,46 +38,97 @@ internal static class ChatScreen
         var input = new TextField { X = Pos.Right(prompt), Y = Pos.AnchorEnd(1), Width = Dim.Fill() };
         window.Add(transcript, status, prompt, input);
 
-        var current = new Bubble();
+        var typing = false;
+        input.ValueChanged += (_, _) =>
+        {
+            var hasText = !string.IsNullOrEmpty(input.Text);
+            if (hasText == typing) return;
+            typing = hasText;
+            if (hasText) session.TypingStarted();
+            else session.TypingStopped(sent: false);
+        };
+
+        string VisibleText(TranscriptEntry entry) =>
+            ReferenceEquals(entry, revealingEntry)
+                ? entry.Text[..Math.Min(revealed, entry.Text.Length)]
+                : entry.Text;
 
         void Render()
         {
-            while (lines.Count > current.Start)
-            {
-                lines.RemoveAt(lines.Count - 1);
-                roles.RemoveAt(roles.Count - 1);
-            }
-
+            roles.Clear();
+            styles.Clear();
+            lines.Clear();
             var width = Math.Max(20, transcript.Viewport.Width);
-            foreach (var line in current.Wrap(width * BubbleWidthPercent / 100))
+            var frame = SpinnerFrames[spinner % SpinnerFrames.Length];
+            foreach (var entry in session.Transcript.Snapshot())
+            foreach (var (text, style) in WrapEntry(entry, VisibleText(entry), width, frame))
             {
-                lines.Add(current.Role == ChatRole.User ? line.PadLeft(width) : line);
-                roles.Add(current.Role);
+                lines.Add(entry.Role == TranscriptRole.User ? text.PadLeft(width) : text);
+                roles.Add(entry.Role);
+                styles.Add(style);
             }
-            transcript.MoveEnd(false);
+            if (lines.Count > 0) transcript.MoveEnd(false);
         }
 
-        void StartLine(ChatMessage message) => Tui.Invoke(() =>
-        {
-            current = new Bubble { Start = lines.Count, Role = message.Role, Speaker = message.Speaker, Text = message.Text };
-            Render();
-        });
-        void AppendLine(string text) => Tui.Invoke(() =>
-        {
-            current.Text += text;
-            Render();
-        });
-        void SetStatus(string? message) => Tui.Invoke(() => status.Text = message ?? "");
-        void Leave() => Tui.Invoke(() => Tui.RequestStop(window));
+        var background = transcript.GetAttributeForRole(VisualRole.Normal).Background;
+        var yourTurn = new Scheme(new Terminal.Gui.Drawing.Attribute(new Color(ColorName16.BrightGreen), background));
+        var notYourTurn = new Scheme(new Terminal.Gui.Drawing.Attribute(new Color(ColorName16.Gray), background));
+        prompt.SetScheme(notYourTurn);
+
+        var baseTitle = window.Title;
+        void OnChanged() => Tui.Invoke(Render);
+        void OnStatus(string? message) => Tui.Invoke(() => status.Text = message ?? "");
+        void OnConnection(bool connected) => Tui.Invoke(() =>
+            window.Title = connected ? baseTitle : $"{baseTitle}  —  ⚠ DISCONNECTED (reconnecting…)");
+        void OnTurn(bool userTurn) => Tui.Invoke(() => prompt.SetScheme(userTurn ? yourTurn : notYourTurn));
+        void OnLeave() => Tui.Invoke(() => Tui.RequestStop(window));
 
         session.Interaction = new TuiInteraction(window);
-        session.MessageStarted += StartLine;
-        session.MessageAppended += AppendLine;
-        session.StatusChanged += SetStatus;
-        session.LeaveRequested += Leave;
+        session.Transcript.Changed += OnChanged;
+        session.StatusChanged += OnStatus;
+        session.ConnectionChanged += OnConnection;
+        session.TurnChanged += OnTurn;
+        session.LeaveRequested += OnLeave;
 
-        foreach (var message in session.History)
-            StartLine(message);
+        // Existing history (and the user's own lines) appears at once; only new replies type out.
+        var initial = session.Transcript.Snapshot().LastOrDefault();
+        revealingEntry = initial;
+        revealed = initial?.Text.Length ?? 0;
+
+        bool Animate()
+        {
+            var snapshot = session.Transcript.Snapshot();
+            var last = snapshot.Count > 0 ? snapshot[^1] : null;
+            var changed = false;
+
+            if (!ReferenceEquals(last, revealingEntry))
+            {
+                revealingEntry = last;
+                revealed = last is { Role: TranscriptRole.Character } ? 0 : last?.Text.Length ?? 0;
+                changed = true;
+            }
+
+            if (revealingEntry is { Role: TranscriptRole.Character } && revealed < revealingEntry.Text.Length)
+            {
+                // Reveal a random few characters (sometimes none) so it reads like irregular typing.
+                revealed = Math.Min(revealingEntry.Text.Length, revealed + Random.Shared.Next(0, 5));
+                changed = true;
+            }
+
+            if (snapshot.Any(e => e.Pending))
+            {
+                spinner++;
+                changed = true;
+            }
+
+            return changed;
+        }
+
+        var animationTimer = Tui.AddTimeout(TimeSpan.FromMilliseconds(30), () =>
+        {
+            if (Animate()) Render();
+            return true;
+        });
 
         input.KeyDown += (_, key) =>
         {
@@ -81,6 +138,7 @@ internal static class ChatScreen
                 if (!string.IsNullOrWhiteSpace(text))
                 {
                     session.SendText(text);
+                    if (typing) { typing = false; session.TypingStopped(sent: true); }
                     input.Text = "";
                 }
                 key.Handled = true;
@@ -99,54 +157,71 @@ internal static class ChatScreen
         };
 
         input.SetFocus();
+        Render();
+        Tui.AddTimeout(TimeSpan.FromMilliseconds(50), () =>
+        {
+            Render(); // re-wrap once the real viewport width is known after layout
+            return false;
+        });
         Tui.Run(window);
 
-        session.MessageStarted -= StartLine;
-        session.MessageAppended -= AppendLine;
-        session.StatusChanged -= SetStatus;
-        session.LeaveRequested -= Leave;
+        Tui.RemoveTimeout(animationTimer);
+        session.Transcript.Changed -= OnChanged;
+        session.StatusChanged -= OnStatus;
+        session.ConnectionChanged -= OnConnection;
+        session.TurnChanged -= OnTurn;
+        session.LeaveRequested -= OnLeave;
         window.Dispose();
 
         return Task.CompletedTask;
     }
 
-    private static Color ColorFor(ChatRole role) => role switch
+    // Yields (text, style) lines: a bold speaker header (unless a continuation), then the body
+    // (italic for narration).
+    private static IEnumerable<(string Text, TextStyle Style)> WrapEntry(TranscriptEntry entry, string visibleText, int width, char spinnerFrame)
     {
-        ChatRole.Character => new Color(ColorName16.BrightCyan),
-        ChatRole.User => new Color(ColorName16.BrightGreen),
-        _ => new Color(ColorName16.Gray),
-    };
+        var bubble = Math.Max(8, width * BubbleWidthPercent / 100);
 
-    private sealed class Bubble
-    {
-        public int Start;
-        public ChatRole Role;
-        public string Speaker = "";
-        public string Text = "";
-
-        public IEnumerable<string> Wrap(int width)
+        if (entry.Role is TranscriptRole.System or TranscriptRole.Error)
         {
-            width = Math.Max(8, width);
-            var header = Role == ChatRole.System ? null : $"{Speaker}:";
-            var body = Role == ChatRole.System ? $"[{Text}]" : Text;
+            foreach (var line in Wrap(visibleText, bubble))
+                yield return (line, TextStyle.None);
+            yield break;
+        }
 
-            if (header != null) yield return header;
+        if (!entry.Continuation)
+            yield return (entry.Speaker, TextStyle.Bold);
 
-            foreach (var paragraph in body.ReplaceLineEndings("\n").Split('\n'))
+        var body = entry.Pending ? spinnerFrame.ToString() : visibleText;
+        var bodyStyle = entry.Narration ? TextStyle.Italic : TextStyle.None;
+        foreach (var line in Wrap(body, bubble))
+            yield return (line, bodyStyle);
+    }
+
+    private static IEnumerable<string> Wrap(string text, int width)
+    {
+        foreach (var paragraph in text.ReplaceLineEndings("\n").Split('\n'))
+        {
+            var line = new StringBuilder();
+            foreach (var word in paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries))
             {
-                var line = new StringBuilder();
-                foreach (var word in paragraph.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                if (line.Length > 0 && line.Length + 1 + word.Length > width)
                 {
-                    if (line.Length > 0 && line.Length + 1 + word.Length > width)
-                    {
-                        yield return line.ToString();
-                        line.Clear();
-                    }
-                    if (line.Length > 0) line.Append(' ');
-                    line.Append(word);
+                    yield return line.ToString();
+                    line.Clear();
                 }
-                yield return line.ToString();
+                if (line.Length > 0) line.Append(' ');
+                line.Append(word);
             }
+            yield return line.ToString();
         }
     }
+
+    private static Color ColorFor(TranscriptRole role) => role switch
+    {
+        TranscriptRole.Character => new Color(ColorName16.BrightCyan),
+        TranscriptRole.User => new Color(ColorName16.BrightGreen),
+        TranscriptRole.Error => new Color(ColorName16.BrightRed),
+        _ => new Color(ColorName16.Gray),
+    };
 }

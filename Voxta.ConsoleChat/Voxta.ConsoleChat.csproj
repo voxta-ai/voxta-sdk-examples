@@ -14,8 +14,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="LibVLCSharp" Version="3.10.0" />
+        <PackageReference Include="NAudio.Wasapi" Version="2.3.0" />
+        <PackageReference Include="NAudio.WinMM" Version="2.3.0" />
         <PackageReference Include="Terminal.Gui" Version="2.4.7" />
-        <PackageReference Include="Voxta.Client" Version="1.7.0" />
+        <PackageReference Include="Voxta.Client" Version="1.7.0.2" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.9" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.9" />
@@ -24,9 +27,16 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.9" />
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.9" />
         <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.9" />
-        <PackageReference Include="NAudio.Wasapi" Version="2.3.0" />
-        <PackageReference Include="NAudio.WinMM" Version="2.3.0" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.9" />
+    </ItemGroup>
+
+    <!-- Native VLC for Windows; Linux/macOS use the system-installed VLC (the app degrades gracefully if missing). -->
+    <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+        <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\scenario.json" />
     </ItemGroup>
 
     <ItemGroup>

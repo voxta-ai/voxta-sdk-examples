@@ -13,6 +13,7 @@ namespace Voxta.ConsoleChat.Audio;
 public class NAudioAudioRecorder : IAudioRecorder
 {
     private readonly ClientWebSocket _socket = new();
+    private readonly SemaphoreSlim _sendLock = new(1, 1);
     private readonly WaveInEvent _waveIn;
     private readonly VoxtaClientOptions _options;
     private readonly ILogger<NAudioAudioRecorder> _logger;
@@ -60,13 +61,27 @@ public class NAudioAudioRecorder : IAudioRecorder
         _waveIn.StopRecording();
     }
 
-    private void OnDataAvailable(object? sender, WaveInEventArgs e)
+    private async void OnDataAvailable(object? sender, WaveInEventArgs e)
     {
         if (!_ready || e.BytesRecorded == 0 || !_socket.State.HasFlag(WebSocketState.Open))
             return;
 
-        _socket.SendAsync(new ArraySegment<byte>(e.Buffer, 0, e.BytesRecorded), WebSocketMessageType.Binary, true, CancellationToken.None)
-            .ContinueWith(t => _logger.LogError(t.Exception, "Failed to send audio input data"), TaskContinuationOptions.OnlyOnFaulted);
+        // NAudio reuses e.Buffer, and a ClientWebSocket allows only one send at a time, so copy and serialize.
+        var chunk = e.Buffer.AsMemory(0, e.BytesRecorded).ToArray();
+        await _sendLock.WaitAsync();
+        try
+        {
+            if (_socket.State.HasFlag(WebSocketState.Open))
+                await _socket.SendAsync(chunk, WebSocketMessageType.Binary, true, CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Failed to send audio input data");
+        }
+        finally
+        {
+            _sendLock.Release();
+        }
     }
 
     public void Dispose()
@@ -74,6 +89,7 @@ public class NAudioAudioRecorder : IAudioRecorder
         _ready = false;
         _socket.Dispose();
         _waveIn.Dispose();
+        _sendLock.Dispose();
         GC.SuppressFinalize(this);
     }
 }
