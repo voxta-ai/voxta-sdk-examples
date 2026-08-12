@@ -8,11 +8,11 @@ the SDK packages directly — clone it, point it at a running Voxta Server, and 
 
 | Project | What it shows |
 | --- | --- |
-| [`Voxta.ConsoleChat`](Voxta.ConsoleChat) | A terminal UI client that connects to Voxta, lets you pick a character, then chat with text, speech recognition, and audio playback. |
-| [`Voxta.SampleProviderApp`](Voxta.SampleProviderApp) | A provider app that extends a live session: register actions, react to messages, update context, and send messages on behalf of the user. |
-| [`Voxta.Modules.Examples.ChatAugmentationExample`](Voxta.Modules.Examples.ChatAugmentationExample) | A server-side module (chat augmentation) packaged with the `Voxta.Sdk.Modules` SDK. |
-| [`Voxta.Modules.Examples.TextGenExample`](Voxta.Modules.Examples.TextGenExample) | A text generation module: how a prompt is built from a chat, and how tokens are streamed back. Echoes the last user message instead of running a model. |
-| [`Voxta.Modules.Examples.TextToSpeechExample`](Voxta.Modules.Examples.TextToSpeechExample) | A text to speech module: how voices are listed, and how audio is streamed to the client. Generates beeps instead of speech. |
+| [`Voxta.ConsoleChat`](clients/Voxta.ConsoleChat) | A terminal UI client that connects to Voxta, lets you pick a character, then chat with text, speech recognition, and audio playback. |
+| [`Voxta.SampleProviderApp`](providerapps/Voxta.SampleProviderApp) | A provider app that extends a live session: register actions, react to messages, update context, and send messages on behalf of the user. |
+| [`Voxta.Modules.Examples.ChatAugmentationExample`](modules/Voxta.Modules.Examples.ChatAugmentationExample) | A server-side module (chat augmentation) packaged with the `Voxta.Sdk.Modules` SDK. |
+| [`Voxta.Modules.Examples.TextGenExample`](modules/Voxta.Modules.Examples.TextGenExample) | A text generation module: how a prompt is built from a chat, and how tokens are streamed back. Echoes the last user message instead of running a model. |
+| [`Voxta.Modules.Examples.TextToSpeechExample`](modules/Voxta.Modules.Examples.TextToSpeechExample) | A text to speech module: how voices are listed, and how audio is streamed to the client. Generates beeps instead of speech. |
 
 ## Writing a module
 
@@ -35,7 +35,7 @@ Anything worth tuning belongs in a preset.
 To install one on a server, build it and copy the output next to the server's own modules:
 
 ```bash
-cd Voxta.Modules.Examples.TextGenExample
+cd modules/Voxta.Modules.Examples.TextGenExample
 dotnet build -c Release
 # then copy bin/Release/net10.0/Voxta.Modules.Examples.TextGenExample.dll
 # into the server's Modules folder, and restart it
@@ -52,7 +52,7 @@ module then shows up in the server's module list, where it can be added and conf
 ## Running an example
 
 ```bash
-cd Voxta.SampleProviderApp
+cd providerapps/Voxta.SampleProviderApp
 dotnet run
 ```
 
