@@ -43,8 +43,10 @@ public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IMod
     {
         var fields = FormBuilder.Build(
             FormTitleField.Create("Chat Augmentations Examples"),
-            SampleActionInference
+            SampleActionInference,
+            SampleScriptEvent,
+            SamplePreprocessor
         );
         return Task.FromResult(fields);
     }
-    }
+}

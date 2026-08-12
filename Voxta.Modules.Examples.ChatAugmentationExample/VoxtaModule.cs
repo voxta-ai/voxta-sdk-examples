@@ -1,6 +1,5 @@
 ﻿using Voxta.Abstractions.Modules;
 using Voxta.Abstractions.Registration;
-using Voxta.Model.Shared;
 using Voxta.Modules.Examples.ChatAugmentationExample.Configuration;
 using Voxta.Modules.Examples.ChatAugmentationExample.CustomActionAugmentationExample;
 
@@ -8,8 +7,15 @@ namespace Voxta.Modules.Examples.ChatAugmentationExample;
 
 public class VoxtaModule : IVoxtaModule
 {
-    public const string ServiceName = "SamplePlugin";
+    /// <summary>
+    /// The unique name of your module. This is used to identify your module
+    /// internally in the Voxta ecosystem.
+    /// </summary>
+    public const string ServiceName = "ChatAugmentationExample";
     
+    /// <summary>
+    /// The augmentation key that can be configured in your characters.
+    /// </summary>
     public const string ExampleAugmentationsKey = "my_augmentation";
     
     /// <summary>
@@ -20,20 +26,23 @@ public class VoxtaModule : IVoxtaModule
         builder.Register(new()
         {
             ServiceName = ServiceName,
-            Label = "Sample Plugin",
+            Label = "Examples: Chat Augmentation Example",
             Experimental = true,
             CanBeInstalledByAdminsOnly = false,
             Supports = new()
             {
-                { ServiceTypes.ChatAugmentations, ServiceDefinitionCategoryScore.Medium },
+                ChatAugmentations = new(ServiceDefinitionCategoryScore.Medium),
             },
             Pricing = ServiceDefinitionPricing.Free,
             Hosting = ServiceDefinitionHosting.Builtin,
             SupportsExplicitContent = true,
             Recommended = false,
-            Notes = "This is a sample plugin.",
+            Notes = "This is a sample plugin that provides chat augmentations.",
             HelpLink = "https://doc.voxta.ai/",
             Augmentations = [ExampleAugmentationsKey],
+            // The logo is an SVG embedded in this assembly (see the .csproj). The path is
+            // relative to the type's namespace, with folder separators written as dots.
+            Logo = ModuleLogo.EmbeddedResource(typeof(VoxtaModule), "Assets.chat-augmentation-example.svg"),
             ModuleConfigurationProviderType = typeof(ModuleConfigurationProvider),
             ModuleConfigurationFieldsRequiringReload = ModuleConfigurationProvider.FieldsRequiringReload,
         });

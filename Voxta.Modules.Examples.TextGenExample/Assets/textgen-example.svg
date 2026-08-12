@@ -1,0 +1,8 @@
+<!--
+  Module logos are single-color SVGs: use `currentColor` everywhere so the icon
+  follows the Voxta theme instead of fighting it. Keep it square and simple, it
+  is displayed as small as 24x24 pixels.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <path fill="currentColor" d="M40 40h176a16 16 0 0 1 16 16v112a16 16 0 0 1-16 16H108l-52 40v-40H40a16 16 0 0 1-16-16V56a16 16 0 0 1 16-16Zm44 60a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm44 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Zm44 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24Z"/>
+</svg>
