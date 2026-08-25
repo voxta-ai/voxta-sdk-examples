@@ -6,6 +6,7 @@ using Terminal.Gui.App;
 using Terminal.Gui.Input;
 using Terminal.Gui.ViewBase;
 using Terminal.Gui.Views;
+using Voxta.ConsoleChat.Functions;
 
 namespace Voxta.ConsoleChat.Presentation.Tui;
 
@@ -30,6 +31,14 @@ internal static class Tui
 
     public static bool Confirm(View owner, string title, string message) =>
         MessageBox.Query(owner.App!, title, message, "Yes", "No") == 0;
+
+    public static ToolPermission AskToolPermission(View owner, string title, string message) =>
+        MessageBox.Query(owner.App!, title, message, "Allow once", "Allow for this chat", "Deny") switch
+        {
+            0 => ToolPermission.Allow,
+            1 => ToolPermission.AllowForSession,
+            _ => ToolPermission.Deny,
+        };
 
     public static bool IsQuit(Key key) => key == Key.Esc || key == Key.C.WithCtrl;
 }

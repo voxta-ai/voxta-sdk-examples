@@ -182,7 +182,7 @@ internal static class ChatScreen
     {
         var bubble = Math.Max(8, width * BubbleWidthPercent / 100);
 
-        if (entry.Role is TranscriptRole.System or TranscriptRole.Error)
+        if (entry.Role is TranscriptRole.System or TranscriptRole.Error or TranscriptRole.Tool)
         {
             foreach (var line in Wrap(visibleText, bubble))
                 yield return (line, TextStyle.None);
@@ -222,6 +222,7 @@ internal static class ChatScreen
         TranscriptRole.Character => new Color(ColorName16.BrightCyan),
         TranscriptRole.User => new Color(ColorName16.BrightGreen),
         TranscriptRole.Error => new Color(ColorName16.BrightRed),
+        TranscriptRole.Tool => new Color(ColorName16.BrightYellow),
         _ => new Color(ColorName16.Gray),
     };
 }

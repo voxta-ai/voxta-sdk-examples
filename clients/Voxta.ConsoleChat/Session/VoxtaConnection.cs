@@ -101,6 +101,8 @@ public class VoxtaConnection : IAsyncDisposable
         .On<ServerReplyChunkMessage>(m => _session?.OnReplyChunk(m))
         .On<ServerReplyEndMessage>(m => _session?.OnReplyEnd(m))
         .On<ServerReplyCancelledMessage>(m => _session?.OnReplyCancelled(m))
+        .On<ServerReplyToolCallMessage>(m => _session?.OnToolCall(m))
+        .On<ServerToolPermissionRequestMessage>(m => _session?.OnToolPermissionRequest(m))
         .On<ServerSpeechRecognitionStartMessage>(m => _session?.OnSpeechRecognitionStart(m))
         .On<ServerSpeechRecognitionPartialMessage>(m => _session?.OnSpeechRecognitionPartial(m))
         .On<ServerSpeechRecognitionEndMessage>(m => _session?.OnSpeechRecognitionEnd(m))

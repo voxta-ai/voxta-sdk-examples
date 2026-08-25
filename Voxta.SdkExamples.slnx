@@ -1,13 +1,19 @@
 <Solution>
   <Folder Name="/clients/">
+    <File Path="clients/README.md" />
     <Project Path="clients/Voxta.ConsoleChat/Voxta.ConsoleChat.csproj" />
   </Folder>
   <Folder Name="/providerapps/">
+    <File Path="providerapps/README.md" />
     <Project Path="providerapps/Voxta.SampleProviderApp/Voxta.SampleProviderApp.csproj" />
   </Folder>
   <Folder Name="/modules/">
+    <File Path="modules/README.md" />
     <Project Path="modules/Voxta.Modules.Examples.ChatAugmentationExample/Voxta.Modules.Examples.ChatAugmentationExample.csproj" />
     <Project Path="modules/Voxta.Modules.Examples.TextGenExample/Voxta.Modules.Examples.TextGenExample.csproj" />
     <Project Path="modules/Voxta.Modules.Examples.TextToSpeechExample/Voxta.Modules.Examples.TextToSpeechExample.csproj" />
+  </Folder>
+  <Folder Name="/_/">
+    <File Path="README.md" />
   </Folder>
 </Solution>

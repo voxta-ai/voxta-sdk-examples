@@ -113,6 +113,52 @@ public class ChatSession(
             RunPendingAction();
     }
 
+    // A tool the character called while writing its reply. The call arrives first, then the same
+    // message again with Completed set and the result filled in.
+    internal void OnToolCall(ServerReplyToolCallMessage message)
+    {
+        var entry = transcript.FindToolCall(message.ToolCallId);
+        if (entry == null)
+        {
+            entry = transcript.Add(new TranscriptEntry
+            {
+                Role = TranscriptRole.Tool,
+                Speaker = message.Name,
+                MessageId = message.MessageId,
+                ToolCallId = message.ToolCallId,
+            });
+        }
+
+        var label = string.IsNullOrEmpty(message.Summary) ? message.Name : message.Summary;
+        entry.Text = message.Completed
+            ? $"[{label}] {(message.IsError ? "failed: " : "")}{message.Result}"
+            : $"[{label}] running...";
+        entry.Pending = false;
+        transcript.NotifyChanged();
+    }
+
+    // The server asks before a tool runs. Answering is what unblocks the reply, so it must not
+    // happen on the websocket thread: the prompt sits there until the user picks an answer.
+    internal void OnToolPermissionRequest(ServerToolPermissionRequestMessage message)
+    {
+        var interaction = Interaction ?? DenyInteraction.Instance;
+        Task.Run(() =>
+        {
+            var permission = interaction.RequestToolPermission(
+                $"Allow {message.Name}?",
+                message.Description ?? $"{CharacterName} wants to run {message.Name}."
+            );
+
+            client.Send(new ClientToolPermissionReplyMessage
+            {
+                SessionId = message.SessionId,
+                RequestId = message.RequestId,
+                Allow = permission != ToolPermission.Deny,
+                ForSession = permission == ToolPermission.AllowForSession,
+            });
+        });
+    }
+
     internal void OnServerUpdated(ServerUpdatedMessage message)
     {
         var entry = transcript.LastWithMessageId(message.MessageId);

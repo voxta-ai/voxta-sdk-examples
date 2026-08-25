@@ -43,6 +43,21 @@ public class EchoTextGenService(
     /// <summary>Whether your backend can enforce a JSON schema on the answer.</summary>
     public bool SupportsStructuredOutput => false;
 
+    /// <summary>
+    /// Whether the model thinks before answering, and how that thinking is delimited. Voxta needs
+    /// this to keep the thinking out of the reply: the character should not speak it, and it should
+    /// not be stored in the chat history.
+    ///
+    /// <see cref="ReasoningStyle.InOutputTokens"/> means the thinking arrives inside the same
+    /// stream as the answer, wrapped in the tags given by <c>Tags</c> (for example
+    /// <c>new ThinkingFormat("&lt;think&gt;", "&lt;/think&gt;")</c>).
+    /// <see cref="ReasoningStyle.InResponseObjects"/> means the backend returns it as a separate
+    /// field, and the service marks those tokens with <c>Thinking = true</c> instead.
+    ///
+    /// This service does not reason, so it declares <see cref="ReasoningInfo.None"/>.
+    /// </summary>
+    public ReasoningInfo Reasoning => ReasoningInfo.None;
+
     // These come from the preset the user selected (ServiceSettings), not from the module
     // configuration, so they are read on every access rather than cached: editing a preset updates
     // a live session in place, and a cached value would keep the old one until the next restart.
@@ -85,6 +100,12 @@ public class EchoTextGenService(
         ProsodyTags = ProsodyTags,
     };
 
+    /// <summary>
+    /// Set once the user picked "allow for the session" on the simulated tool, so the next reply
+    /// does not ask again. Safe as a field because there is one service instance per session.
+    /// </summary>
+    private bool _clockToolAllowedForSession;
+
     /// <summary>Whether images can be included in the prompt (i.e. is the model multimodal).</summary>
     public bool CanProcessAttachments() => false;
 
@@ -115,13 +136,21 @@ public class EchoTextGenService(
         });
     }
 
-    /// <summary>The character's next line in a normal conversation.</summary>
+    /// <summary>
+    /// The character's next line in a normal conversation.
+    ///
+    /// <paramref name="toolPermissionPrompter"/> is how a tool call asks the user for consent
+    /// before it runs. Voxta passes it in only for replies — a summarization or an action inference
+    /// has nobody to ask — and it is null when the chat runs unattended. Pass it along on the
+    /// request so the code that actually calls tools can reach it.
+    /// </summary>
     public async IAsyncEnumerable<LLMOutputToken> GenerateReplyAsync(
         IChatInferenceData chat,
         ICharacterInferenceData character,
         IPromptBuilder promptBuilder,
         string? prefix,
         GenerateConstraintRequest constraintRequest,
+        IToolPermissionPrompter? toolPermissionPrompter,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
@@ -130,7 +159,8 @@ public class EchoTextGenService(
         using var observer = inferenceLoggersManager.Record(ServiceType, InstanceSettings.ServiceName, InferenceLogActionNames.TextGen);
 
         var constraints = await GetConstraintsAsync(chat, character, constraintRequest, cancellationToken);
-        var request = await promptBuilder.CreateReplyRequest(chat, character, constraints, prefix, cancellationToken);
+        var request = (await promptBuilder.CreateReplyRequest(chat, character, constraints, prefix, cancellationToken))
+            with { ToolPermissionPrompter = toolPermissionPrompter };
 
         await foreach (var token in GenerateStreamingAsync(observer, request, cancellationToken))
         {
@@ -202,6 +232,16 @@ public class EchoTextGenService(
         // Attaching the request is what makes the prompt readable in the Inference Logs page.
         observer.Request = new RawDisplayable(string.Join("\n\n", request.Messages.Select(m => $"### {m.Role}\n{m.Value}")));
 
+        // A reply can carry tool calls as well as text. They travel in the same stream, as tokens
+        // of a different type, so a client can show a call while it is still running.
+        if (request.ToolPermissionPrompter != null && ServiceSettings.GetRequired(ServiceSettingsProvider.SimulateToolCall))
+        {
+            await foreach (var token in CallClockToolAsync(request.ToolPermissionPrompter, cancellationToken))
+            {
+                yield return token;
+            }
+        }
+
         var delay = ModuleConfiguration.GetRequired(ModuleConfigurationProvider.TokenDelayMs);
 
         foreach (var word in BuildReply(request).Split(' '))
@@ -215,6 +255,51 @@ public class EchoTextGenService(
             observer.AddToken(token);
             yield return token;
         }
+    }
+
+    /// <summary>
+    /// Stands in for a tool the backend would expose. It shows the three pieces a real tool call
+    /// needs: ask the user, announce the call, then report its result.
+    ///
+    /// The same tool use id ties all three together. Voxta forwards the call and the result to the
+    /// client as they arrive, and stores them on the message once the reply is done.
+    /// </summary>
+    private async IAsyncEnumerable<LLMOutputToken> CallClockToolAsync(
+        IToolPermissionPrompter prompter,
+        [EnumeratorCancellation] CancellationToken cancellationToken
+    )
+    {
+        const string toolName = "get_current_time";
+        var toolUseId = Guid.NewGuid().ToString("N");
+
+        // This waits for the user to answer in their client, so it can take a while.
+        var decision = _clockToolAllowedForSession
+            ? ToolPermissionDecision.Allow
+            : await prompter.RequestAsync(new ToolPermissionRequest
+            {
+                ToolUseId = toolUseId,
+                ToolName = toolName,
+                DisplayName = "Check the time",
+                Description = "Reads the clock of the machine running the server.",
+            }, cancellationToken);
+
+        // "Allow for the session" is the service's job to remember, not Voxta's.
+        if (decision == ToolPermissionDecision.AllowSession)
+            _clockToolAllowedForSession = true;
+
+        yield return new LLMToolCallToken(
+            Id: toolUseId,
+            Name: toolName,
+            Summary: "Checking the time",
+            Arguments: "{}",
+            // Set when a tool is called from within another one, so a client can nest them.
+            ParentId: null
+        );
+
+        // A denied call still needs a result: the model has to be told why nothing came back.
+        yield return decision == ToolPermissionDecision.Deny
+            ? new LLMToolCallResultToken(toolUseId, toolName, "The user refused this call.", IsError: true, ParentId: null)
+            : new LLMToolCallResultToken(toolUseId, toolName, $"It is {DateTime.Now:HH:mm}.", IsError: false, ParentId: null);
     }
 
     /// <summary>

@@ -67,6 +67,18 @@ public class ServiceSettingsProvider : IServiceSettingsProvider
         DefaultValue = "You said:",
     };
 
+    /// <summary>
+    /// Turns on the tool call demonstration in <see cref="TextGen.EchoTextGenService"/>. A real
+    /// module has no such setting: it calls a tool when its backend asks for one.
+    /// </summary>
+    public static readonly FormBooleanField SimulateToolCall = new()
+    {
+        Name = "SimulateToolCall",
+        Label = "Simulate a tool call",
+        Text = "Ask permission and run a fake \"what time is it\" tool before echoing.",
+        DefaultValue = false,
+    };
+
     public static readonly FormEnumField<TextProcessingOptions> TextProcessing = new()
     {
         Name = "TextProcessing",
@@ -108,7 +120,9 @@ public class ServiceSettingsProvider : IServiceSettingsProvider
             MaxNewTokens,
             MaxContextTokens,
             // Enum fields are declared strongly typed and converted to a choices field here.
-            TextProcessing.AsField()
+            TextProcessing.AsField(),
+            FormTitleField.Create("Tools"),
+            SimulateToolCall
         );
         return Task.FromResult(fields);
     }

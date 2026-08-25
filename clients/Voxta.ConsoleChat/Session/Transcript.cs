@@ -6,6 +6,7 @@ public enum TranscriptRole
     User,
     System,
     Error,
+    Tool,
 }
 
 // A single line in the transcript. Mutable so a streaming reply can grow in place and an
@@ -18,6 +19,9 @@ public sealed class TranscriptEntry
     public string Text { get; set; } = "";
     public bool Pending { get; set; }
     public bool Narration { get; set; }
+
+    // Set on a tool call entry, so the result can be written into the same line when it arrives.
+    public string? ToolCallId { get; init; }
 
     // A continuation does not repeat the speaker name (used when a reply switches between
     // narration and dialogue mid-stream).
@@ -53,6 +57,11 @@ public sealed class Transcript
     public TranscriptEntry? LastWithMessageId(Guid messageId)
     {
         lock (_lock) return _entries.LastOrDefault(e => e.MessageId == messageId);
+    }
+
+    public TranscriptEntry? FindToolCall(string toolCallId)
+    {
+        lock (_lock) return _entries.LastOrDefault(e => e.ToolCallId == toolCallId);
     }
 
     // Notifies subscribers after an entry was mutated in place (e.g. streamed text appended).

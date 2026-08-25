@@ -6,16 +6,21 @@ namespace Voxta.ConsoleChat.Presentation.Tui;
 // Lets a function (running on a background thread) ask the user for confirmation on the UI thread.
 internal sealed class TuiInteraction(View owner) : IFunctionInteraction
 {
-    public bool Confirm(string title, string message)
+    public bool Confirm(string title, string message) => OnUiThread(() => Tui.Confirm(owner, title, message));
+
+    public ToolPermission RequestToolPermission(string title, string message) =>
+        OnUiThread(() => Tui.AskToolPermission(owner, title, message));
+
+    private static T OnUiThread<T>(Func<T> query)
     {
-        var allowed = false;
+        var result = default(T)!;
         using var done = new ManualResetEventSlim();
         Tui.Invoke(() =>
         {
-            try { allowed = Tui.Confirm(owner, title, message); }
+            try { result = query(); }
             finally { done.Set(); }
         });
         done.Wait();
-        return allowed;
+        return result;
     }
 }
