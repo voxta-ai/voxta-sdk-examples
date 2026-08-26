@@ -3,7 +3,7 @@ using Voxta.Abstractions.Security;
 using Voxta.Abstractions.Services.TextGen.SettingsFields;
 using Voxta.Model.Shared;
 using Voxta.Model.Shared.Forms;
-using Voxta.Shared.LLMUtils.Clients;
+using Voxta.Shared.LLMUtils.Configuration;
 
 namespace Voxta.Modules.Examples.TextGenExample.Configuration;
 

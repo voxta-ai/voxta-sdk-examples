@@ -55,21 +55,21 @@ public class EchoClient(IPromptFormatterFactory promptFormatterFactory)
     /// loop for you. False for a backend with no tool support, and equally false for a harness that
     /// runs its own loop — in both cases there is nothing here for Voxta to drive.
     /// </summary>
-    public bool SupportsNativeToolCalling => true;
+    public override bool SupportsNativeToolCalling => true;
 
     /// <summary>
     /// Whether a turn from earlier in the chat can carry the calls it made as structured data. When
     /// false, the exchange is written into the character's line as a sentence instead — which a
     /// model reads as prose to imitate rather than as a tool to call.
     /// </summary>
-    public bool CarriesToolCallsInHistory => true;
+    public override bool CarriesToolCallsInHistory => true;
 
     /// <summary>
     /// Whether <see cref="AppendToolInteraction"/> leaves the model mid-reply rather than at the top
     /// of a fresh turn. False here: this backend takes no prefill, so the base class asks the model
     /// in words to carry on instead of starting the paragraph over.
     /// </summary>
-    public bool ContinuesTurnAfterTools => false;
+    public override bool ContinuesTurnAfterTools => false;
 
     // ---- Setup ---------------------------------------------------------------------------------
 
@@ -127,11 +127,6 @@ public class EchoClient(IPromptFormatterFactory promptFormatterFactory)
     /// next round continues the same turn. The client owns this because only it knows the wire shape
     /// of a tool exchange.
     /// </summary>
-    /// <param name="text">
-    /// The part that is easy to forget and impossible to miss once it is wrong: the user has already
-    /// read "let me look that up", and a next round that cannot see it writes its own opening again
-    /// into the same message.
-    /// </param>
     public void AppendToolInteraction(
         EchoRequest body,
         TextGenGenerateRequest request,

@@ -1,7 +1,7 @@
-using Voxta.Abstractions.Model;
+﻿using Voxta.Abstractions.Model;
 using Voxta.Abstractions.Registration;
 using Voxta.Model.Shared;
-using Voxta.Shared.LLMUtils.Clients;
+using Voxta.Shared.LLMUtils.Configuration;
 
 namespace Voxta.Modules.Examples.TextGenExample.Configuration;
 

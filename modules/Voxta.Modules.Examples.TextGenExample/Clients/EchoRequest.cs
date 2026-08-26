@@ -23,8 +23,14 @@ public class EchoRequest : IDisplayable
     /// </summary>
     public required List<SimpleMessageData> Messages { get; init; }
 
+    /// <summary>
+    /// Provided as an example, not actually used in this example.
+    /// </summary>
     public string[]? StopWords { get; init; }
 
+    /// <summary>
+    /// Provided as an example, not actually used in this example.
+    /// </summary>
     public int MaxLength { get; set; }
 
     /// <summary>What the model may call. Empty when the chat offered nothing.</summary>

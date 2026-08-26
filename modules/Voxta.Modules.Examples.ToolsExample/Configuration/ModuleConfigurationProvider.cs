@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using Voxta.Abstractions.Registration;
 using Voxta.Abstractions.Security;
 using Voxta.Abstractions.Services.Agents;
-using Voxta.Abstractions.Utils;
 using Voxta.Model.Shared.Forms;
 
 namespace Voxta.Modules.Examples.ToolsExample.Configuration;
@@ -12,7 +11,7 @@ namespace Voxta.Modules.Examples.ToolsExample.Configuration;
 /// <c>ModuleConfiguration.GetRequired(ModuleConfigurationProvider.TokenDelayMs)</c>.
 /// </summary>
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Normalize fields visibility for consistency")]
-public class ModuleConfigurationProvider(ICommonFolders folders) : ModuleConfigurationProviderBase, IModuleConfigurationProvider
+public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IModuleConfigurationProvider
 {
     public static string[] FieldsRequiringReload => [];
 

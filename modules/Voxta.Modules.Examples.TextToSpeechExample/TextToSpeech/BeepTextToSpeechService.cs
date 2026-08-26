@@ -80,7 +80,7 @@ public class BeepTextToSpeechService(ILogger<BeepTextToSpeechService> logger)
         // are about to write; the length is unknown while streaming, so pass null.
         await tunnel.RunAsync(ContentType, null, async response =>
         {
-            foreach (var word in words)
+            foreach (var _ in words)
             {
                 // A real service would send whatever its engine just produced instead.
                 await response.SendAsync(GenerateTone(frequency, beepDuration), cancellationToken);
