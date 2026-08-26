@@ -1,4 +1,4 @@
-# Modules
+﻿# Modules
 
 A module runs *inside* Voxta Server. It is a class library you build and drop next to the server's
 own modules; the server loads it at startup, and it becomes part of the server. There is no
@@ -10,6 +10,12 @@ to every reply. Anything that talks to a running chat from the outside is a
 [provider app](../providerapps) instead.
 
 Modules use the `Voxta.Sdk.Modules` package.
+
+Some kinds of module have a companion package with base classes for the heavy lifting —
+`Voxta.Shared.LLMUtils` for text generation, `Voxta.Shared.TextToSpeechUtils` for speech. Use them.
+They are not convenience wrappers: they are where the behavior every module is expected to share
+lives, so a module that reimplements them is a module that quietly behaves differently from the
+rest.
 
 ## The two kinds
 
@@ -24,7 +30,7 @@ Modules use the `Voxta.Sdk.Modules` package.
 
 | Project | What it shows |
 | --- | --- |
-| [`Voxta.Modules.Examples.TextGenExample`](Voxta.Modules.Examples.TextGenExample) | A text generation service: how a prompt is built from a chat, how tokens are streamed back, how reasoning is declared, and how a tool call asks the user for permission. Echoes the last user message instead of running a model. |
+| [`Voxta.Modules.Examples.TextGenExample`](Voxta.Modules.Examples.TextGenExample) | A text generation service, built on the `Voxta.Shared.LLMUtils` base classes: what a backend declares it can do, how a request body is built, how tokens and tool calls are streamed back, and where the shared preset fields come from. Echoes the last user message instead of running a model. |
 | [`Voxta.Modules.Examples.TextToSpeechExample`](Voxta.Modules.Examples.TextToSpeechExample) | A text to speech service: how voices are listed and how audio is streamed to the client. Generates beeps instead of speech. |
 | [`Voxta.Modules.Examples.ChatAugmentationExample`](Voxta.Modules.Examples.ChatAugmentationExample) | A chat augmentation: reacting to messages, inferring custom actions, and preprocessing what the character is about to say. |
 | [`Voxta.Modules.Examples.ToolsExample`](Voxta.Modules.Examples.ToolsExample) | Tool calling: declaring tools with a JSON schema, classifying what each one is allowed to do, running them, and remembering a "yes, always". |

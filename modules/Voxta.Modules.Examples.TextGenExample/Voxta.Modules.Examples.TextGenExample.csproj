@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -8,6 +8,9 @@
 
     <ItemGroup>
         <PackageReference Include="Voxta.Sdk.Modules" Version="1.10.0-alpha.2" />
+        <!-- Base classes for text generation services: the client contract, TextGenServiceBase,
+             the shared preset fields, and the presets/testing providers. -->
+        <PackageReference Include="Voxta.Shared.LLMUtils" Version="1.10.0-alpha.2" />
     </ItemGroup>
 
     <!-- The module logo is loaded from the assembly at runtime, so it must be embedded. -->

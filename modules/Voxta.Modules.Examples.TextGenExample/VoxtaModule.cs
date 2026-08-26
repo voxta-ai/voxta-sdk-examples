@@ -1,5 +1,7 @@
+﻿using Microsoft.Extensions.DependencyInjection;
 using Voxta.Abstractions.Modules;
 using Voxta.Abstractions.Registration;
+using Voxta.Modules.Examples.TextGenExample.Clients;
 using Voxta.Modules.Examples.TextGenExample.Configuration;
 using Voxta.Modules.Examples.TextGenExample.TextGen;
 
@@ -61,11 +63,18 @@ public class VoxtaModule : IVoxtaModule
 
             // Runs when the module is added, to write the preset it ships with.
             ModuleInstallationProviderType = typeof(ServiceInstallationProvider),
+
+            // Backs the Test button, so a user can check their settings without starting a chat.
+            ModuleTestingProviderType = typeof(ModuleTestingProvider),
         });
 
         // Binds the implementation to the service type. One service instance is created per
         // user session, so services can hold per-session state.
         builder.AddTextGenService<EchoTextGenService>(ServiceName);
+
+        // The client the service is built on. Transient rather than singleton: it is initialized
+        // with one user's settings, and a second session must not inherit them.
+        builder.Services.AddTransient<EchoClient>();
 
         // Anything else your services need can be registered here:
         // builder.Services.AddSingleton<MyHelper>();
