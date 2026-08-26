@@ -6,7 +6,7 @@ using Voxta.Model.Shared;
 using Voxta.Model.WebsocketMessages.ClientMessages;
 using Voxta.Model.WebsocketMessages.ServerMessages;
 
-namespace Voxta.Modules.Examples.ChatAugmentationExample.CustomActionAugmentationExample;
+namespace Voxta.Modules.Examples.ChatAugmentationExample.ChatAugmentations;
 
 public class SampleActionInferenceChatAugmentationInstance(
     IChatSessionChatAugmentationApi session,
@@ -14,7 +14,6 @@ public class SampleActionInferenceChatAugmentationInstance(
     ) : IActionInferenceAugmentation
 {
     public ServiceTypes[] GetRequiredServiceTypes() => [ServiceTypes.ActionInference];
-    public string[] GetAugmentationNames() => [VoxtaModule.ExampleAugmentationsKey];
     
     public IEnumerable<ClientUpdateContextMessage> RegisterChatContext()
     {

@@ -1,22 +1,33 @@
 ﻿using Voxta.Abstractions.Modules;
 using Voxta.Abstractions.Registration;
+using Voxta.Modules.Examples.ChatAugmentationExample.ChatAugmentations;
 using Voxta.Modules.Examples.ChatAugmentationExample.Configuration;
-using Voxta.Modules.Examples.ChatAugmentationExample.CustomActionAugmentationExample;
 
 namespace Voxta.Modules.Examples.ChatAugmentationExample;
 
 public class VoxtaModule : IVoxtaModule
 {
     /// <summary>
-    /// The unique name of your module. This is used to identify your module
-    /// internally in the Voxta ecosystem.
+    /// The unique identifier of your module.
     /// </summary>
     public const string ServiceName = "ChatAugmentationExample";
     
     /// <summary>
-    /// The augmentation key that can be configured in your characters.
+    /// The chat augmentation key provided by this module. Can be specified in a character's augmentations.
     /// </summary>
-    public const string ExampleAugmentationsKey = "my_augmentation";
+    public const string ExampleAugmentationsKey = "sample_augmentation";
+
+    /// <summary>
+    /// Augmentations list for this module.
+    /// </summary>
+    public static readonly AugmentationKeyDescriptor[] Augmentations =
+    [
+        new(
+            ExampleAugmentationsKey,
+            "Chat Augmentation Examples",
+            "Date and time lookup, script event logging, and message preprocessing."
+        ),
+    ];
     
     /// <summary>
     /// Configure dependency injection and module features
@@ -39,15 +50,13 @@ public class VoxtaModule : IVoxtaModule
             Recommended = false,
             Notes = "This is a sample plugin that provides chat augmentations.",
             HelpLink = "https://doc.voxta.ai/",
-            Augmentations = [ExampleAugmentationsKey],
-            // The logo is an SVG embedded in this assembly (see the .csproj). The path is
-            // relative to the type's namespace, with folder separators written as dots.
+            Augmentations = Augmentations,
             Logo = ModuleLogo.EmbeddedResource(typeof(VoxtaModule), "Assets.chat-augmentation-example.svg"),
             ModuleConfigurationProviderType = typeof(ModuleConfigurationProvider),
             ModuleConfigurationFieldsRequiringReload = ModuleConfigurationProvider.FieldsRequiringReload,
         });
         
-        builder.AddChatAugmentationsService<SamplePluginChatAugmentationsService>(ServiceName);
+        builder.AddChatAugmentationsService<ChatAugmentationsService>(ServiceName);
         
         // You can also use dependency injection:
         // e.g. builder.Services.AddSingleton<>();

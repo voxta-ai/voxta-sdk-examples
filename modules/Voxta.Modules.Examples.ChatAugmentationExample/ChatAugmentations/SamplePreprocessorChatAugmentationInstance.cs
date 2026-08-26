@@ -4,7 +4,7 @@ using Voxta.Abstractions.Chats.Sessions;
 using Voxta.Abstractions.Services.ChatAugmentations;
 using Voxta.Model.Shared;
 
-namespace Voxta.Modules.Examples.ChatAugmentationExample.CustomActionAugmentationExample;
+namespace Voxta.Modules.Examples.ChatAugmentationExample.ChatAugmentations;
 
 public class SamplePreprocessorChatAugmentationInstance(
     IChatSessionChatAugmentationApi session,
@@ -12,7 +12,6 @@ public class SamplePreprocessorChatAugmentationInstance(
     ) : IChatPreProcessAugmentation, IChatPostProcessAugmentation
 {
     public ServiceTypes[] GetRequiredServiceTypes() => [ServiceTypes.ActionInference];
-    public string[] GetAugmentationNames() => [VoxtaModule.ExampleAugmentationsKey];
 
     public ValueTask<string> PreProcessTextAsync(ChatMessageRole role, string text, CancellationToken cancellationToken)
     {

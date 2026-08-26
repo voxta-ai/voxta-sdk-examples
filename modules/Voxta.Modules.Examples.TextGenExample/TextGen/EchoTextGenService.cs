@@ -5,6 +5,7 @@ using Voxta.Abstractions.Chats.Objects.Chats;
 using Voxta.Abstractions.Diagnostics;
 using Voxta.Abstractions.Prompting;
 using Voxta.Abstractions.Services;
+using Voxta.Abstractions.Services.Agents;
 using Voxta.Abstractions.Services.TextGen;
 using Voxta.Abstractions.TextGenerationStreaming;
 using Voxta.Abstractions.Tokenizers;
@@ -14,19 +15,7 @@ using Voxta.Modules.Examples.TextGenExample.Configuration;
 namespace Voxta.Modules.Examples.TextGenExample.TextGen;
 
 /// <summary>
-/// A text generation service that does not generate anything: it echoes back the last user
-/// message, one word at a time. Everything a real service does is here except the call to a
-/// model, which happens in <see cref="GenerateStreamingAsync"/>.
-///
-/// Voxta never asks for a reply as plain text. It hands over the chat, the character, and a
-/// <see cref="IPromptBuilder"/>, and expects a stream of <see cref="LLMOutputToken"/> back. The
-/// prompt builder is what turns the chat into the messages your backend will see: it applies the
-/// character card, the scenario, memories, summaries, and the token budget you declare below.
-/// That is why the three Generate* methods all look the same — build the request, stream it.
-///
-/// Inherit <see cref="ServiceBase"/> to get <c>ModuleConfiguration</c>, <c>ServiceSettings</c>,
-/// <c>Auth</c> and <c>InstanceSettings</c>. One instance is created per user session, so
-/// per-session state is safe to hold in fields.
+/// Text generation services are responsible for generating text and handling tool calls.
 /// </summary>
 public class EchoTextGenService(
     IInferenceLoggersManager inferenceLoggersManager,
@@ -34,9 +23,7 @@ public class EchoTextGenService(
 ) : ServiceBase(logger), ITextGenService
 {
     /// <summary>
-    /// Used by Voxta to fit the chat history into the prompt. A real module returns the
-    /// tokenizer matching the loaded model; the null one counts zero, which is fine here
-    /// because nothing is ever truncated.
+    /// Used to count tokens and keep messages under the model's context window.
     /// </summary>
     public ITokenizer Tokenizer => NullTokenizer.Instance;
 
@@ -44,23 +31,15 @@ public class EchoTextGenService(
     public bool SupportsStructuredOutput => false;
 
     /// <summary>
-    /// Whether the model thinks before answering, and how that thinking is delimited. Voxta needs
-    /// this to keep the thinking out of the reply: the character should not speak it, and it should
-    /// not be stored in the chat history.
+    /// Whether the text generation service supports thinking tokens.
     ///
-    /// <see cref="ReasoningStyle.InOutputTokens"/> means the thinking arrives inside the same
+    /// <see cref="ReasoningStyle.InOutputTokens"/>: thinking arrives inside the same
     /// stream as the answer, wrapped in the tags given by <c>Tags</c> (for example
     /// <c>new ThinkingFormat("&lt;think&gt;", "&lt;/think&gt;")</c>).
-    /// <see cref="ReasoningStyle.InResponseObjects"/> means the backend returns it as a separate
+    /// <see cref="ReasoningStyle.InResponseObjects"/>: returned as a separate
     /// field, and the service marks those tokens with <c>Thinking = true</c> instead.
-    ///
-    /// This service does not reason, so it declares <see cref="ReasoningInfo.None"/>.
     /// </summary>
     public ReasoningInfo Reasoning => ReasoningInfo.None;
-
-    // These come from the preset the user selected (ServiceSettings), not from the module
-    // configuration, so they are read on every access rather than cached: editing a preset updates
-    // a live session in place, and a cached value would keep the old one until the next restart.
 
     /// <summary>Size of the context window, i.e. how much prompt the model can be given.</summary>
     public int MaxWindowTokens => ServiceSettings.GetRequired(ServiceSettingsProvider.MaxContextTokens);
@@ -78,16 +57,26 @@ public class EchoTextGenService(
     public TextProcessingOptions TextProcessing => ServiceSettings.GetRequired(ServiceSettingsProvider.TextProcessing);
 
     /// <summary>
-    /// True only if the prompt asked the model to mark tone with angle brackets, so that those
-    /// markers are read as markers rather than spoken aloud. Requires a matching prompt.
+    /// Whether this LLM is capable enough to handle prosody tags, e.g. &lt;loud&gt;.
     /// </summary>
     public bool ProsodyTags => false;
 
-    // How this service wants to receive the system prompt, plus optional additions to it.
-    // Real modules usually expose these as preset settings so users can tune them per model.
+    /// <summary>
+    /// Whether this service can run tools.
+    /// </summary>
+    public bool SupportsToolCalling => true;
+
+    /// <summary>
+    /// Whether the LLM drives the tool loop for this service, e.g. Claude Code.
+    /// </summary>
+    public bool SupportsNativeToolCalling => false;
+
+    // You can allow users to provide a custom system prompt or a custom system prompt addon.
     public SystemPromptOverrideTypes SystemPromptOverrideType => SystemPromptOverrideTypes.AddOn;
     public string? SystemPromptAddon => null;
     public string? ContextPromptAddon => null;
+    
+    // You can allow users to provide forcing a reply prefix.
     public string? ReplyPrefix => null;
 
     /// <summary>Limits applied to the generated text before it reaches the chat.</summary>
@@ -102,7 +91,7 @@ public class EchoTextGenService(
 
     /// <summary>
     /// Set once the user picked "allow for the session" on the simulated tool, so the next reply
-    /// does not ask again. Safe as a field because there is one service instance per session.
+    /// does not ask again.
     /// </summary>
     private bool _clockToolAllowedForSession;
 
@@ -110,8 +99,7 @@ public class EchoTextGenService(
     public bool CanProcessAttachments() => false;
 
     /// <summary>
-    /// Called before the first message so a local model can be loaded ahead of time. Nothing to
-    /// warm up here.
+    /// Called before the first message so a local model can be loaded ahead of time.
     /// </summary>
     public Task WarmupAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
@@ -137,12 +125,7 @@ public class EchoTextGenService(
     }
 
     /// <summary>
-    /// The character's next line in a normal conversation.
-    ///
-    /// <paramref name="toolPermissionPrompter"/> is how a tool call asks the user for consent
-    /// before it runs. Voxta passes it in only for replies — a summarization or an action inference
-    /// has nobody to ask — and it is null when the chat runs unattended. Pass it along on the
-    /// request so the code that actually calls tools can reach it.
+    /// A reply in a conversation, including tool calling.
     /// </summary>
     public async IAsyncEnumerable<LLMOutputToken> GenerateReplyAsync(
         IChatInferenceData chat,
@@ -150,17 +133,19 @@ public class EchoTextGenService(
         IPromptBuilder promptBuilder,
         string? prefix,
         GenerateConstraintRequest constraintRequest,
-        IToolPermissionPrompter? toolPermissionPrompter,
+        IAgentToolsContext? agentTools,
         [EnumeratorCancellation] CancellationToken cancellationToken
     )
     {
-        // Recording the inference makes the prompt and the answer visible in the server's
-        // Inference Logs page, which is the first place to look when a module misbehaves.
+        // Records this request for the Inference Logs page.
         using var observer = inferenceLoggersManager.Record(ServiceType, InstanceSettings.ServiceName, InferenceLogActionNames.TextGen);
 
         var constraints = await GetConstraintsAsync(chat, character, constraintRequest, cancellationToken);
-        var request = (await promptBuilder.CreateReplyRequest(chat, character, constraints, prefix, cancellationToken))
-            with { ToolPermissionPrompter = toolPermissionPrompter };
+        var request = await promptBuilder.CreateReplyRequest(chat, character, constraints, prefix, cancellationToken)
+            with
+            {
+                AgentTools = agentTools
+            };
 
         await foreach (var token in GenerateStreamingAsync(observer, request, cancellationToken))
         {
@@ -170,7 +155,7 @@ public class EchoTextGenService(
         observer.Done();
     }
 
-    /// <summary>Narration of an event, written in the third person rather than spoken.</summary>
+    /// <summary>Narration of an event.</summary>
     public async IAsyncEnumerable<LLMOutputToken> GenerateStoryAsync(
         IChatInferenceData chat,
         string eventDescription,
@@ -194,8 +179,7 @@ public class EchoTextGenService(
     }
 
     /// <summary>
-    /// A one-off question asked about the chat, used by scripts and augmentations. The answer
-    /// goes to the caller, not to the chat.
+    /// A one-off question asked about the chat, used by scripts and augmentations.
     /// </summary>
     public async IAsyncEnumerable<LLMOutputToken> GenerateInferAsync(
         IChatInferenceData chat,
@@ -219,9 +203,7 @@ public class EchoTextGenService(
     }
 
     /// <summary>
-    /// Where a real module would call its backend: send <paramref name="request"/>.Messages to
-    /// an API or a local model, and yield each token as it arrives. Streaming matters — Voxta
-    /// starts speaking the first sentence while the rest is still being written.
+    /// The workhorse of text generation services, this is what generates text and call tools.
     /// </summary>
     public async IAsyncEnumerable<LLMOutputToken> GenerateStreamingAsync(
         InferenceLogger observer,
@@ -232,11 +214,9 @@ public class EchoTextGenService(
         // Attaching the request is what makes the prompt readable in the Inference Logs page.
         observer.Request = new RawDisplayable(string.Join("\n\n", request.Messages.Select(m => $"### {m.Role}\n{m.Value}")));
 
-        // A reply can carry tool calls as well as text. They travel in the same stream, as tokens
-        // of a different type, so a client can show a call while it is still running.
-        if (request.ToolPermissionPrompter != null && ServiceSettings.GetRequired(ServiceSettingsProvider.SimulateToolCall))
+        if (request.AgentTools != null)
         {
-            await foreach (var token in CallClockToolAsync(request.ToolPermissionPrompter, cancellationToken))
+            await foreach (var token in CallClockToolAsync(request.AgentTools.Prompter, cancellationToken))
             {
                 yield return token;
             }
@@ -258,11 +238,7 @@ public class EchoTextGenService(
     }
 
     /// <summary>
-    /// Stands in for a tool the backend would expose. It shows the three pieces a real tool call
-    /// needs: ask the user, announce the call, then report its result.
-    ///
-    /// The same tool use id ties all three together. Voxta forwards the call and the result to the
-    /// client as they arrive, and stores them on the message once the reply is done.
+    /// Example tool calling
     /// </summary>
     private async IAsyncEnumerable<LLMOutputToken> CallClockToolAsync(
         IToolPermissionPrompter prompter,
@@ -303,9 +279,7 @@ public class EchoTextGenService(
     }
 
     /// <summary>
-    /// Non-streaming variant, used where the whole answer is needed at once (summarization,
-    /// action inference, scripts). Real modules usually call their backend without streaming
-    /// here rather than reassembling tokens.
+    /// Non-streaming variant.
     /// </summary>
     public async ValueTask<string> GenerateAsync(
         TextGenGenerateRequest request,
@@ -321,10 +295,6 @@ public class EchoTextGenService(
         return string.Concat(chunks).Trim();
     }
 
-    /// <summary>
-    /// Stands in for the model. The prompt builder has already turned the chat into messages,
-    /// so the last user message is the closest thing to "what was just said".
-    /// </summary>
     private string BuildReply(TextGenGenerateRequest request)
     {
         var lastUserMessage = request.Messages.LastOrDefault(m => m.Role == ChatMessageRole.User)?.Value;

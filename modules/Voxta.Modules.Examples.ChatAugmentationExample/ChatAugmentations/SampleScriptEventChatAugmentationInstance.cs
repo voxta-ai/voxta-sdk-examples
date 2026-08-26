@@ -6,7 +6,7 @@ using Voxta.Abstractions.Scripting.ActionScripts;
 using Voxta.Abstractions.Services.ChatAugmentations;
 using Voxta.Model.Shared;
 
-namespace Voxta.Modules.Examples.ChatAugmentationExample.CustomActionAugmentationExample;
+namespace Voxta.Modules.Examples.ChatAugmentationExample.ChatAugmentations;
 
 public class SampleScriptEventChatAugmentationInstance(
     IChatSessionChatAugmentationApi session,
@@ -14,7 +14,6 @@ public class SampleScriptEventChatAugmentationInstance(
     ) : IChatScriptEventsAugmentation
 {
     public ServiceTypes[] GetRequiredServiceTypes() => [ServiceTypes.ActionInference];
-    public string[] GetAugmentationNames() => [VoxtaModule.ExampleAugmentationsKey];
 
     public Task OnChatScriptEvent(
         IActionScriptEvent e,

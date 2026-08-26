@@ -9,18 +9,16 @@ using Voxta.Modules.Examples.TextGenExample.Configuration;
 namespace Voxta.Modules.Examples.TextGenExample;
 
 /// <summary>
-/// Runs when the user adds the module. This is where a module downloads its model, installs its
-/// Python dependencies, or — as here — writes the presets it ships with, so the preset dropdown is
-/// not empty the first time the user opens it.
+/// Runs when the user adds the module.
 /// </summary>
 public class ServiceInstallationProvider(IUnitOfWorkFactory unitOfWorkFactory) : IServiceInstallationProvider
 {
-    /// <summary>Python packages to install in the module's environment. This module has none.</summary>
-    public IEnumerable<string> GetPythonDependencies(ISettingsSource settings) => [];
+    /// <summary>Python packages to install in the module's environment.</summary>
+    public IEnumerable<string> GetPythonDependencies() => [];
 
     /// <summary>
     /// Called once per installed instance. It also runs again when an existing instance is
-    /// reconfigured, so it must be safe to repeat: create nothing that is already there.
+    /// reconfigured, so it must be safe to repeat.
     /// </summary>
     public async Task ConfigureModuleAsync(
         IAuthenticationContext auth,
@@ -29,18 +27,19 @@ public class ServiceInstallationProvider(IUnitOfWorkFactory unitOfWorkFactory) :
         CancellationToken cancellationToken
     )
     {
-        await using var uow = unitOfWorkFactory.CreateUnitOfWork();
+        // Database access with decryption for this user.
+        await using var uow = unitOfWorkFactory.CreateUnitOfWork(auth.UserId);
 
         // Presets the user has since edited or deleted are theirs; only seed an empty slate.
-        var existing = await uow.ServiceSettings.GetManyByServiceTypeAsync(auth.UserId, module.LocalId, ServiceTypes.TextGen, cancellationToken);
+        var existing = await uow.ServiceSettings.GetManyByServiceTypeAsync(module.Id, ServiceTypes.TextGen, cancellationToken);
         if (existing.Length > 0) return;
 
         foreach (var preset in BuiltInPresets.All())
         {
             // The builder leaves the identity blank because it does not know the user or module.
             preset.UserId = auth.UserId;
-            preset.ModuleId = module.LocalId;
-            preset.LocalId = Guid.NewGuid();
+            preset.ModuleId = module.Id;
+            preset.Id = Guid.NewGuid();
             await uow.ServiceSettings.CreateAsync(preset);
         }
 

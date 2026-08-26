@@ -5,18 +5,13 @@ using Voxta.Model.Shared.Forms;
 namespace Voxta.Modules.Examples.TextGenExample.Configuration;
 
 /// <summary>
-/// Builds the form shown on the module's Configure page. Fields are declared as static
-/// readonly members so services can read them back in a type-safe way:
+/// Builds the Configure page form. Fields can be read in your code, e.g.:
 /// <c>ModuleConfiguration.GetRequired(ModuleConfigurationProvider.TokenDelayMs)</c>.
-///
-/// This form is about the module itself — where the backend is and how to talk to it. Settings
-/// the user tunes per chat belong in a preset instead; see <see cref="ServiceSettingsProvider"/>.
 /// </summary>
 public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IModuleConfigurationProvider
 {
     /// <summary>
-    /// Fields that cannot be applied to a live session. Changing one of these restarts the
-    /// module instead of updating it in place. Nothing here needs that.
+    /// When these fields are changed, the module is reloaded (useful for in-process modules).
     /// </summary>
     public static string[] FieldsRequiringReload => [];
 

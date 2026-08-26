@@ -12,6 +12,7 @@
     <Project Path="modules/Voxta.Modules.Examples.ChatAugmentationExample/Voxta.Modules.Examples.ChatAugmentationExample.csproj" />
     <Project Path="modules/Voxta.Modules.Examples.TextGenExample/Voxta.Modules.Examples.TextGenExample.csproj" />
     <Project Path="modules/Voxta.Modules.Examples.TextToSpeechExample/Voxta.Modules.Examples.TextToSpeechExample.csproj" />
+    <Project Path="modules/Voxta.Modules.Examples.ToolsExample/Voxta.Modules.Examples.ToolsExample.csproj" />
   </Folder>
   <Folder Name="/_/">
     <File Path="README.md" />

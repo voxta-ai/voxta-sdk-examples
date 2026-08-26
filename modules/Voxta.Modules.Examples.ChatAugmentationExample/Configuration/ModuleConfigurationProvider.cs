@@ -1,12 +1,13 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Voxta.Abstractions.Registration;
+﻿using Voxta.Abstractions.Registration;
 using Voxta.Abstractions.Security;
 using Voxta.Model.Shared.Forms;
 
 namespace Voxta.Modules.Examples.ChatAugmentationExample.Configuration;
 
-[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Normalize fields visibility for consistency")]
-[SuppressMessage("ReSharper", "RedundantArgumentDefaultValue", Justification = "Service default values may match global default values")]
+/// <summary>
+/// Builds the Configure page form. Fields can be read in your code, e.g.:
+/// <c>ModuleConfiguration.GetRequired(ModuleConfigurationProvider.SampleActionInference)</c>.
+/// </summary>
 public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IModuleConfigurationProvider
 {
     public static string[] FieldsRequiringReload => [];
