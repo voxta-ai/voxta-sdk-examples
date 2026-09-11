@@ -7,10 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Voxta.Sdk.Modules" Version="1.10.0-alpha.3" />
+        <PackageReference Include="Voxta.Sdk.Modules" Version="1.10.0" />
         <!-- Base classes for text generation services: the client contract, TextGenServiceBase,
              the shared preset fields, and the presets/testing providers. -->
-        <PackageReference Include="Voxta.Shared.LLMUtils" Version="1.10.0-alpha.3" />
+        <PackageReference Include="Voxta.Shared.LLMUtils" Version="1.10.0" />
     </ItemGroup>
 
     <!-- The module logo is loaded from the assembly at runtime, so it must be embedded. -->

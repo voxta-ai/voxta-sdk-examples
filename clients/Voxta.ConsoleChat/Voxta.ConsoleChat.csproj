@@ -15,19 +15,19 @@
 
     <ItemGroup>
         <PackageReference Include="LibVLCSharp" Version="3.10.1" />
-        <PackageReference Include="NAudio.Wasapi" Version="3.0.1" />
-        <PackageReference Include="NAudio.WinMM" Version="3.0.1" />
-        <PackageReference Include="Terminal.Gui" Version="2.4.17" />
-        <PackageReference Include="Voxta.Client" Version="1.10.0-alpha.3" />
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.11" />
-        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.11" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.11" />
+        <PackageReference Include="NAudio.Wasapi" Version="3.1.0" />
+        <PackageReference Include="NAudio.WinMM" Version="3.1.0" />
+        <PackageReference Include="Terminal.Gui" Version="2.5.0" />
+        <PackageReference Include="Voxta.Client" Version="1.10.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.12" />
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.12" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.12" />
     </ItemGroup>
 
     <!-- Native VLC for Windows; Linux/macOS use the system-installed VLC (the app degrades gracefully if missing). -->
