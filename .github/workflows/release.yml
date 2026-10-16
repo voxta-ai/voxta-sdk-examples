@@ -29,25 +29,26 @@ jobs:
           if [[ "$tag" == */v* ]]; then id="${tag%/v*}"; version="${tag##*/v}"; else id=""; version="${tag#v}"; fi
           found=()
           while IFS= read -r manifest; do
-            if [[ -z "$id" || "$(grep -oP '"id"\s*:\s*"\K[^"]+' "$manifest")" == "$id" ]]; then found+=("$manifest"); fi
+            if [[ -z "$id" || "$(grep -oP -m1 '"id"\s*:\s*"\K[^"]+' "$manifest")" == "$id" ]]; then found+=("$manifest"); fi
           done < <(git ls-files '*module.json' | grep -E '(^|/)module\.json$')
           if [[ ${#found[@]} -ne 1 ]]; then
             echo "::error::${#found[@]} modules match $tag. With several modules, tag <module id>/v<version>."
             exit 1
           fi
           manifest="${found[0]}"
-          if [[ "$(grep -oP '"version"\s*:\s*"\K[^"]+' "$manifest")" != "$version" ]]; then
+          if [[ "$(grep -oP -m1 '"version"\s*:\s*"\K[^"]+' "$manifest")" != "$version" ]]; then
             echo "::error::$manifest's version is not $version."
             exit 1
           fi
           echo "project=$(dirname "$manifest")" >> "$GITHUB_OUTPUT"
           if [[ "$version" == *-* ]]; then echo "prerelease=--prerelease" >> "$GITHUB_OUTPUT"; fi
 
-      - run: dotnet restore --locked-mode
-
       - name: Pack
+        env:
+          PROJECT: ${{ steps.module.outputs.project }}
         run: |
-          dotnet publish "${{ steps.module.outputs.project }}" -c Release --no-restore -p:VoxtaModulePack="$PWD/dist"
+          dotnet restore "$PROJECT" --locked-mode
+          dotnet publish "$PROJECT" -c Release --no-restore -p:VoxtaModulePack="$PWD/dist"
           if [[ ! -f dist/voxta-module.json ]]; then
             echo "::error::Nothing packed: Voxta.Sdk.Modules is older than the VoxtaModulePack target (1.13.0-alpha.2)."
             exit 1

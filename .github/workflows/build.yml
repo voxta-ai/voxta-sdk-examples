@@ -18,12 +18,25 @@ jobs:
         with:
           global-json-file: global.json
 
-      # Fails when a package changed without packages.lock.json being committed.
-      - run: dotnet restore --locked-mode
+      # Locked: fails when a package changed without packages.lock.json being committed. Each module packs into its own
+      # folder, as release.yml would.
+      - name: Pack each module
+        run: |
+          git ls-files '*module.json' | grep -E '(^|/)module\.json$' | while IFS= read -r manifest; do
+            project="$(dirname "$manifest")"
+            out="$PWD/dist/$(basename "$project")"
+            dotnet restore "$project" --locked-mode
+            dotnet publish "$project" -c Release --no-restore -p:VoxtaModulePack="$out"
+            if [[ ! -f "$out/voxta-module.json" ]]; then
+              echo "::error::Nothing packed for $project: Voxta.Sdk.Modules is older than the VoxtaModulePack target (1.13.0-alpha.2)."
+              exit 1
+            fi
+          done
 
-      - run: dotnet publish -c Release --no-restore -p:VoxtaModulePack="$PWD/dist"
+      - run: dotnet build -c Release
 
       - uses: actions/upload-artifact@v4
         with:
-          name: module
+          name: modules
           path: dist/
+          if-no-files-found: error

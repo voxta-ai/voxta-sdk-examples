@@ -6,6 +6,8 @@
         <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <!-- Its framework depends on the OS, and a lock file holds one machine's. -->
+        <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
