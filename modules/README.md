@@ -1,15 +1,16 @@
 ﻿# Modules
 
-A module runs *inside* Voxta Server. It is a class library you build and drop next to the server's
-own modules; the server loads it at startup, and it becomes part of the server. There is no
-websocket and no connection to manage.
+A module runs *inside* Voxta Server. It is a class library the server loads in its own load context,
+with its own DI container, and it becomes part of the server. There is no websocket and no
+connection to manage.
 
 Write one when you want to plug something into Voxta itself: a model that writes the replies, a
 voice that speaks them, speech recognition, vision, image generation — or extra behavior applied
 to every reply. Anything that talks to a running chat from the outside is a
 [provider app](../providerapps) instead.
 
-Modules use the `Voxta.Sdk.Modules` package.
+Modules use the `Voxta.Sdk.Modules` package, referenced with `ExcludeAssets="runtime"`: Voxta
+provides it, and every other `Voxta.*` assembly, at runtime.
 
 Some kinds of module have a companion package with base classes for the heavy lifting —
 `Voxta.Shared.LLMUtils` for text generation, `Voxta.Shared.TextToSpeechUtils` for speech. Use them.
@@ -78,8 +79,8 @@ user finds out which of their modules answered when two of them offer a `web_sea
 
 ## The entry point
 
-Every module has one `VoxtaModule : IVoxtaModule` class. Voxta calls its `Configure` once at
-startup, and that is where the module declares what it supports and binds its implementations:
+Every module has one `VoxtaModule : IVoxtaModule` class. Voxta calls its `Configure` once when the
+module loads, and that is where the module declares what it supports and binds its implementations:
 
 ```csharp
 public class VoxtaModule : IVoxtaModule
@@ -88,13 +89,33 @@ public class VoxtaModule : IVoxtaModule
 
     public void Configure(IVoxtaModuleBuilder builder)
     {
-        builder.Register(new ModuleDefinition { /* name, logo, settings pages... */ });
+        builder.Register(new ModuleDefinition { Version = ModuleInfo.Version, /* name, logo, settings pages... */ });
         builder.AddTextGenService<MyTextGenService>(ServiceName);
     }
 }
 ```
 
 The `ServiceName` is what user settings are saved against, so do not change it once published.
+
+`builder.Services` is the module's own container: Voxta's services are visible to it, other
+modules' are not. Things the host asks every module for (chat bridges, model repositories, HTTP
+endpoints) are given with `builder.Contribute<TContract, TImpl>()`.
+
+## module.json
+
+Next to the csproj. The package's build targets embed it and generate `ModuleInfo.Version` from it.
+
+```json
+{
+  "id": "Voxta.Modules.MyModule",
+  "version": "1.0.0",
+  "voxta": ">=1.13.0"
+}
+```
+
+- `id`: the assembly name.
+- `version`: the module's only version; a new one offers users the update.
+- `voxta`: the Voxta versions it runs on. Build against the oldest one.
 
 ## Settings
 
@@ -109,10 +130,16 @@ Settings live in two places, and the text generation example shows both.
 
 ```bash
 cd modules/Voxta.Modules.Examples.TextGenExample
-dotnet build -c Release
-# then copy bin/Release/net10.0/Voxta.Modules.Examples.TextGenExample.dll
-# into the server's Modules folder, and restart it
+dotnet build
 ```
 
-The assembly name must start with `Voxta.Modules.` — that is how the server finds it. The module
-then shows up in the server's module list, where it can be added and configured.
+1. In Voxta, open **Add Modules → Add Custom Module** and add the project folder (or its build
+   output) as a dev folder, then **Apply**. The module shows up in Add Modules with a Dev badge.
+2. Change code, build again with Voxta running, **Apply**: the new build replaces the old one, no
+   restart.
+
+Without the source, **Install from .zip or .dll** on the same page: the DLL alone, or a zip of the
+`dotnet publish` output when the module ships libraries of its own.
+
+Custom modules need Voxta Full and an administrator. The assembly name must start with
+`Voxta.Modules.`. Load errors show on the Custom Modules page.

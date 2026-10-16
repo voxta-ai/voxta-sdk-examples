@@ -37,10 +37,9 @@ The text generation module is responsible for saving whether a user has been acc
 ## Building it
 
 ```bash
-dotnet build -c Release
-# copy bin/Release/net10.0/Voxta.Modules.Examples.ToolsExample.dll
-# into the server's Modules folder, and restart it
+dotnet build
 ```
 
-Then add the module in the server's module list, and enable the `examples.tools` augmentation on a
+Then add this folder in **Add Modules → Add Custom Module** and **Apply** (see the
+[modules README](../README.md#installing-one-on-a-server)), and enable the `examples.tools` augmentation on a
 character or in a chat. You need a model that supports tool calling.
