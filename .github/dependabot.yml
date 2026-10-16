@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    ignore:
+      # The oldest Voxta you support: raised on purpose, with module.json's range.
+      - dependency-name: Voxta.*

@@ -109,13 +109,16 @@ Next to the csproj. The package's build targets embed it and generate `ModuleInf
 {
   "id": "Voxta.Modules.MyModule",
   "version": "1.0.0",
-  "voxta": ">=1.13.0"
+  "voxta": ">=1.13.0",
+  "label": "My Module",
+  "description": "What it does, in a line."
 }
 ```
 
 - `id`: the assembly name.
 - `version`: the module's only version; a new one offers users the update.
 - `voxta`: the Voxta versions it runs on. Build against the oldest one.
+- `label`, `description`: how a GitHub source lists it.
 
 ## Settings
 
@@ -143,3 +146,17 @@ Without the source, **Install from .zip or .dll** on the same page: the DLL alon
 
 Custom modules need Voxta Full and an administrator. The assembly name must start with
 `Voxta.Modules.`. Load errors show on the Custom Modules page.
+
+## Publishing one
+
+This repository is set up like the
+[module template](https://github.com/voxta-ai/voxta-module-template), which is the better start for a
+module of your own: same build settings, same workflows.
+
+- `dotnet publish -c Release -p:VoxtaModulePack=dist` writes what Voxta installs: the zip and its
+  `voxta-module.json`.
+- Tagging `<module id>/v<version>` (`v<version>` in a repository with one module) runs
+  `.github/workflows/release.yml`: it builds, attests and creates the GitHub release.
+- Voxta users add the repository in **Add Modules → Module Registries** (`owner/repo`) and install
+  from there.
+- `packages.lock.json` pins every package; CI restores with `--locked-mode`.

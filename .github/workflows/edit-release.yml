@@ -1,0 +1,42 @@
+# Changes a published release without rebuilding it: cap its Voxta range when a later Voxta breaks it, or yank it.
+# Voxta reads the release's voxta-module.json, so servers see the change on their next refresh.
+name: edit release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag, e.g. v0.1.0
+        required: true
+      voxta:
+        description: New Voxta range, e.g. ">=1.13.0, <1.15.0" (empty keeps it)
+        required: false
+      yanked:
+        description: Withdraw it
+        type: choice
+        options: [unchanged, 'yes', 'no']
+        default: unchanged
+
+permissions:
+  contents: write
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Edit voxta-module.json
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+          VOXTA: ${{ inputs.voxta }}
+          YANKED: ${{ inputs.yanked }}
+        run: |
+          gh release download "$TAG" --pattern voxta-module.json --dir in
+          mkdir out
+          jq --arg voxta "$VOXTA" --arg yanked "$YANKED" '
+            (if $voxta != "" then .module.voxta = $voxta else . end)
+            | (if $yanked == "yes" then .yanked = true elif $yanked == "no" then .yanked = false else . end)
+          ' in/voxta-module.json > out/voxta-module.json
+          cat out/voxta-module.json
+          gh release upload "$TAG" out/voxta-module.json --clobber

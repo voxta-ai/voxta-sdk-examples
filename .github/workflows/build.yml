@@ -1,0 +1,29 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      # Fails when a package changed without packages.lock.json being committed.
+      - run: dotnet restore --locked-mode
+
+      - run: dotnet publish -c Release --no-restore -p:VoxtaModulePack="$PWD/dist"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: module
+          path: dist/

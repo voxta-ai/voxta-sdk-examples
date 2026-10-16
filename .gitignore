@@ -87,3 +87,4 @@ tests/output/*
 /.idea/.idea.Voxta.Server/.idea/nx-console.xml
 settings.local.json
 src/mobile/Voxta.MobileApp/Assets/wwwroot/
+dist/

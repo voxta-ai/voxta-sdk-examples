@@ -1,0 +1,64 @@
+# Push a tag named after module.json's version to publish the module: v0.1.0, or <module id>/v0.1.0 in a repository
+# with several modules. A version with a suffix (v0.2.0-beta.1) is a pre-release: Voxta lists it only when the source
+# shows pre-releases.
+name: release
+
+on:
+  push:
+    tags: ['v*', '*/v*']
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Find the module the tag names
+        id: module
+        run: |
+          tag="$GITHUB_REF_NAME"
+          if [[ "$tag" == */v* ]]; then id="${tag%/v*}"; version="${tag##*/v}"; else id=""; version="${tag#v}"; fi
+          found=()
+          while IFS= read -r manifest; do
+            if [[ -z "$id" || "$(grep -oP '"id"\s*:\s*"\K[^"]+' "$manifest")" == "$id" ]]; then found+=("$manifest"); fi
+          done < <(git ls-files '*module.json' | grep -E '(^|/)module\.json$')
+          if [[ ${#found[@]} -ne 1 ]]; then
+            echo "::error::${#found[@]} modules match $tag. With several modules, tag <module id>/v<version>."
+            exit 1
+          fi
+          manifest="${found[0]}"
+          if [[ "$(grep -oP '"version"\s*:\s*"\K[^"]+' "$manifest")" != "$version" ]]; then
+            echo "::error::$manifest's version is not $version."
+            exit 1
+          fi
+          echo "project=$(dirname "$manifest")" >> "$GITHUB_OUTPUT"
+          if [[ "$version" == *-* ]]; then echo "prerelease=--prerelease" >> "$GITHUB_OUTPUT"; fi
+
+      - run: dotnet restore --locked-mode
+
+      - name: Pack
+        run: |
+          dotnet publish "${{ steps.module.outputs.project }}" -c Release --no-restore -p:VoxtaModulePack="$PWD/dist"
+          if [[ ! -f dist/voxta-module.json ]]; then
+            echo "::error::Nothing packed: Voxta.Sdk.Modules is older than the VoxtaModulePack target (1.13.0-alpha.2)."
+            exit 1
+          fi
+
+      # Signed proof that this workflow built the zip from this commit: gh attestation verify <zip> --repo <owner/repo>
+      - uses: actions/attest-build-provenance@v3
+        with:
+          subject-path: dist/*.zip
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/* --verify-tag --generate-notes ${{ steps.module.outputs.prerelease }}
