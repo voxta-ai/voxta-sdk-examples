@@ -6,8 +6,8 @@ using Voxta.Modules.Examples.ToolsExample.Configuration;
 namespace Voxta.Modules.Examples.ToolsExample;
 
 /// <summary>
-/// Entry point of the module. Voxta scans loaded assemblies for <see cref="IVoxtaModule"/>
-/// implementations, instantiates them, and calls <see cref="Configure"/> once at startup.
+/// Entry point of the module. Voxta finds <see cref="IVoxtaModule"/> implementations in the module's
+/// assembly, instantiates them, and calls <see cref="Configure"/> once when the module loads.
 /// </summary>
 public class VoxtaModule : IVoxtaModule
 {
@@ -17,6 +17,7 @@ public class VoxtaModule : IVoxtaModule
         {
             ServiceName = ToolsExampleConstants.ServiceName,
             Label = "Examples: Tool Calling Example",
+            Version = ModuleInfo.Version,
             Experimental = true,
             InstallableBy = ModuleInstallableBy.Anyone,
             Supports = new()

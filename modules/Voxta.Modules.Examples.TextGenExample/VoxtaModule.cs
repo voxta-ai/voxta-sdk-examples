@@ -8,8 +8,8 @@ using Voxta.Modules.Examples.TextGenExample.TextGen;
 namespace Voxta.Modules.Examples.TextGenExample;
 
 /// <summary>
-/// Entry point of the module. Voxta scans loaded assemblies for <see cref="IVoxtaModule"/>
-/// implementations, instantiates them, and calls <see cref="Configure"/> once at startup.
+/// Entry point of the module. Voxta finds <see cref="IVoxtaModule"/> implementations in the module's
+/// assembly, instantiates them, and calls <see cref="Configure"/> once when the module loads.
 /// </summary>
 public class VoxtaModule : IVoxtaModule
 {
@@ -25,6 +25,7 @@ public class VoxtaModule : IVoxtaModule
         {
             ServiceName = ServiceName,
             Label = "Examples: Text Generation",
+            Version = ModuleInfo.Version,
 
             // Which service types this module offers. A module can offer several; this one only
             // does text generation. The score is a hint for the module picker, not a limit.

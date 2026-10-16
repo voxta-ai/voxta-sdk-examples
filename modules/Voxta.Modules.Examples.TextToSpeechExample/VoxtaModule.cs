@@ -6,8 +6,8 @@ using Voxta.Modules.Examples.TextToSpeechExample.TextToSpeech;
 namespace Voxta.Modules.Examples.TextToSpeechExample;
 
 /// <summary>
-/// Entry point of the module. Voxta scans loaded assemblies for <see cref="IVoxtaModule"/>
-/// implementations, instantiates them, and calls <see cref="Configure"/> once at startup.
+/// Entry point of the module. Voxta finds <see cref="IVoxtaModule"/> implementations in the module's
+/// assembly, instantiates them, and calls <see cref="Configure"/> once when the module loads.
 /// </summary>
 public class VoxtaModule : IVoxtaModule
 {
@@ -23,6 +23,7 @@ public class VoxtaModule : IVoxtaModule
         {
             ServiceName = ServiceName,
             Label = "Examples: Text to Speech",
+            Version = ModuleInfo.Version,
 
             Supports = new ModuleSupports
             {

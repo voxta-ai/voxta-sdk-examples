@@ -38,6 +38,7 @@ public class VoxtaModule : IVoxtaModule
         {
             ServiceName = ServiceName,
             Label = "Examples: Chat Augmentation Example",
+            Version = ModuleInfo.Version,
             Experimental = true,
             InstallableBy = ModuleInstallableBy.Anyone,
             Supports = new()
