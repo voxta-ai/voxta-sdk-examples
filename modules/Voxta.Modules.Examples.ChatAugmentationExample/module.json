@@ -1,5 +1,7 @@
 {
   "id": "Voxta.Modules.Examples.ChatAugmentationExample",
   "version": "1.0.0",
-  "voxta": ">=1.13.0"
+  "voxta": ">=1.13.0",
+  "label": "Examples: Chat Augmentation",
+  "description": "Reacts to messages, infers custom actions and preprocesses replies."
 }

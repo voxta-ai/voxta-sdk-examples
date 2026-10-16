@@ -1,5 +1,7 @@
 {
   "id": "Voxta.Modules.Examples.TextGenExample",
   "version": "1.0.0",
-  "voxta": ">=1.13.0"
+  "voxta": ">=1.13.0",
+  "label": "Examples: Text Generation",
+  "description": "Echoes the last user message instead of running a model."
 }
