@@ -18,9 +18,7 @@
         <PackageReference Include="NAudio.Wasapi" Version="3.2.0" />
         <PackageReference Include="NAudio.WinMM" Version="3.2.0" />
         <PackageReference Include="Terminal.Gui" Version="2.5.0" />
-        <PackageReference Include="Voxta.Client" Version="1.12.0" />
-        <!-- Voxta.Client 1.12.0 pulls SignalR 10.0.12, which has a known vulnerability (GHSA-334f-vvp4-7g6p). -->
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.13" />
+        <PackageReference Include="Voxta.Client" Version="1.13.0-alpha.1" />
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.13" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
