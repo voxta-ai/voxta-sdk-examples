@@ -50,7 +50,7 @@ public class VoxtaModule : IVoxtaModule
             HelpLink = "https://doc.voxta.ai/",
             SupportsExplicitContent = true,
             Experimental = true,
-            Recommended = false,
+            Recommendation = ServiceDefinitionRecommendation.Neutral,
 
             // The logo is an SVG embedded in this assembly (see the .csproj). The path is
             // relative to the type's namespace, with folder separators written as dots.

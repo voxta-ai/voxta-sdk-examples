@@ -6,7 +6,7 @@ using Voxta.Modules.Examples.ToolsExample.Configuration;
 namespace Voxta.Modules.Examples.ToolsExample.ChatAugmentations;
 
 /// <summary>
-/// Where "yes, always" is written down when the user grants a tool for good.
+/// Where "yes, always" is written down when the user grants a tool for good, and erased when they take it back.
 /// </summary>
 public sealed class ToolsExampleGrantWriter(
     Guid userId,
@@ -15,7 +15,13 @@ public sealed class ToolsExampleGrantWriter(
     ILogger<ToolsExampleGrantWriter> logger
 ) : IToolPermissionGrantWriter
 {
-    public async Task RememberAlwaysAllowAsync(string toolName, CancellationToken cancellationToken)
+    public Task RememberAlwaysAllowAsync(string toolName, CancellationToken cancellationToken) =>
+        UpdateAlwaysAllowAsync(toolName, allow: true, cancellationToken);
+
+    public Task ForgetAlwaysAllowAsync(string toolName, CancellationToken cancellationToken) =>
+        UpdateAlwaysAllowAsync(toolName, allow: false, cancellationToken);
+
+    private async Task UpdateAlwaysAllowAsync(string toolName, bool allow, CancellationToken cancellationToken)
     {
         try
         {
@@ -26,25 +32,26 @@ public sealed class ToolsExampleGrantWriter(
             var module = await uow.Modules.GetByIdAsync(moduleId, cancellationToken);
             if (module == null)
             {
-                logger.LogWarning("Could not remember {Tool}: module {ModuleId} is gone.", toolName, moduleId);
+                logger.LogWarning("Could not update {Tool}: module {ModuleId} is gone.", toolName, moduleId);
                 return;
             }
 
             var field = ModuleConfigurationProvider.AlwaysAllow.Name;
             var current = module.Configuration.GetValueOrDefault(field);
             var tools = current?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
-            if (tools.Contains(toolName, StringComparer.Ordinal)) return;
+            if (tools.Contains(toolName, StringComparer.Ordinal) == allow) return;
 
-            module.Configuration[field] = string.Join(", ", tools.Append(toolName));
+            var updated = allow ? tools.Append(toolName) : tools.Where(t => !string.Equals(t, toolName, StringComparison.Ordinal));
+            module.Configuration[field] = string.Join(", ", updated);
 
             await uow.Modules.UpdateAsync(module);
             await uow.SaveChangesAsync(cancellationToken);
 
-            logger.LogInformation("{Tool} is now always allowed.", toolName);
+            logger.LogInformation(allow ? "{Tool} is now always allowed." : "{Tool} is no longer always allowed.", toolName);
         }
         catch (Exception exc)
         {
-            logger.LogWarning(exc, "Could not remember the permission for {Tool}.", toolName);
+            logger.LogWarning(exc, "Could not update the permission for {Tool}.", toolName);
         }
     }
 }

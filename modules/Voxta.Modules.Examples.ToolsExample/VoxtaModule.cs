@@ -18,7 +18,7 @@ public class VoxtaModule : IVoxtaModule
             ServiceName = ToolsExampleConstants.ServiceName,
             Label = "Examples: Tool Calling Example",
             Experimental = true,
-            CanBeInstalledByAdminsOnly = false,
+            InstallableBy = ModuleInstallableBy.Anyone,
             Supports = new()
             {
                 ChatAugmentations = new(ServiceDefinitionCategoryScore.Medium),
@@ -26,7 +26,7 @@ public class VoxtaModule : IVoxtaModule
             Pricing = ServiceDefinitionPricing.Free,
             Hosting = ServiceDefinitionHosting.Builtin,
             SupportsExplicitContent = true,
-            Recommended = false,
+            Recommendation = ServiceDefinitionRecommendation.Neutral,
             Notes = "Two tools the AI can call during a reply: rolling dice, and appending a line to a notes file.",
             HelpLink = "https://doc.voxta.ai/",
             Pros = "Free, no API key, works with any model that can call tools",
