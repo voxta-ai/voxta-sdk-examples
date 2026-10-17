@@ -33,6 +33,8 @@ public class VoxtaModule : IVoxtaModule
             Pros = "Free, no API key, works with any model that can call tools",
             Cons = "Requires a model that supports tool calling",
             Augmentations = ToolsExampleConstants.Augmentations,
+            // Instructions the model loads when it needs them: the markdown in Skills/, which the SDK embeds.
+            Skills = ModuleSkills.EmbeddedResources(typeof(VoxtaModule)),
             ModuleConfigurationProviderType = typeof(ModuleConfigurationProvider),
             ModuleConfigurationFieldsRequiringReload = ModuleConfigurationProvider.FieldsRequiringReload,
         });

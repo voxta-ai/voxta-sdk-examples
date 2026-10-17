@@ -27,6 +27,18 @@ Whether the user will be asked for permission.
 
 The text generation module is responsible for saving whether a user has been accepted.
 
+## Skills
+
+How to use the tools well (when to roll, what belongs in a note) is in `Skills/dice-and-notes.md` rather than in the
+tool descriptions. A tool's description is sent with every request; a skill is listed by its one-line description and
+loaded only when the model decides it needs it.
+
+- Markdown with front matter (`name`, `description`), in a `Skills` folder next to the csproj. The SDK embeds it.
+- `Skills = ModuleSkills.EmbeddedResources(typeof(VoxtaModule))` on the module, the way `Logo` points at its image.
+- Offered in chats running the module's augmentations; `metadata.augmentations` narrows one skill to some keys, and
+  `metadata.tools` names the tools it is about.
+- A skill with files beside it is a folder: `Skills/<name>/SKILL.md` and the files.
+
 ## Important notes
 
 - **Never throw an exception with a tool call.** Instead, return text with `ChatToolCallResult(..., IsError: true)`
