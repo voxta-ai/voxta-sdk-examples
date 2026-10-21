@@ -49,9 +49,7 @@ public class VoxtaModule : IVoxtaModule
             Pros = "No model to download, no API key, instant.",
             Cons = "Nobody will understand a word.",
             HelpLink = "https://doc.voxta.ai/",
-            SupportsExplicitContent = true,
-            Experimental = true,
-            Recommendation = ServiceDefinitionRecommendation.Neutral,
+            Flags = [ModuleFlag.SupportsExplicitContent, ModuleFlag.Experimental],
 
             // The logo is an SVG embedded in this assembly (see the .csproj). The path is
             // relative to the type's namespace, with folder separators written as dots.

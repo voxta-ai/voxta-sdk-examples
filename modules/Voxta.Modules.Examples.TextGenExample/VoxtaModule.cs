@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Voxta.Abstractions.Modules;
 using Voxta.Abstractions.Registration;
 using Voxta.Modules.Examples.TextGenExample.Clients;
@@ -45,9 +45,8 @@ public class VoxtaModule : IVoxtaModule
             Pros = "No model to download, no API key, fully deterministic.",
             Cons = "Not actually intelligent.",
             HelpLink = "https://doc.voxta.ai/",
-            SupportsExplicitContent = true,
-            Experimental = true,
-            Recommendation = ServiceDefinitionRecommendation.Neutral,
+            // On/off traits. Voxta only ever adds flags, so a published module keeps loading on newer versions.
+            Flags = [ModuleFlag.SupportsExplicitContent, ModuleFlag.Experimental],
 
             // The logo is an SVG embedded in this assembly (see the .csproj). The path is
             // relative to the type's namespace, with folder separators written as dots.

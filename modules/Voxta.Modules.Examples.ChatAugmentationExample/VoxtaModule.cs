@@ -39,7 +39,7 @@ public class VoxtaModule : IVoxtaModule
             ServiceName = ServiceName,
             Label = "Examples: Chat Augmentation Example",
             Version = ModuleInfo.Version,
-            Experimental = true,
+            Flags = [ModuleFlag.Experimental, ModuleFlag.SupportsExplicitContent],
             InstallableBy = ModuleInstallableBy.Anyone,
             Supports = new()
             {
@@ -47,8 +47,6 @@ public class VoxtaModule : IVoxtaModule
             },
             Pricing = ServiceDefinitionPricing.Free,
             Hosting = ServiceDefinitionHosting.Builtin,
-            SupportsExplicitContent = true,
-            Recommendation = ServiceDefinitionRecommendation.Neutral,
             Notes = "This is a sample plugin that provides chat augmentations.",
             HelpLink = "https://doc.voxta.ai/",
             Augmentations = Augmentations,
