@@ -1,6 +1,7 @@
 {
   "id": "Voxta.Modules.Examples.TextToSpeechExample",
   "version": "1.0.0",
+  "author": "YourName",
   "voxta": ">=1.13.0",
   "label": "Examples: Text to Speech",
   "description": "Generates beeps instead of speech."
