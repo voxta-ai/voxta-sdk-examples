@@ -1,0 +1,8 @@
+{
+  "id": "Voxta.Modules.Examples.GameExample",
+  "category": "Games",
+  "version": "1.0.0",
+  "voxta": ">=1.13.0",
+  "label": "Examples: Game Integration",
+  "description": "A game mod talking to Voxta characters: voiced replies as wav files, the player on Voxta's microphone, game actions as tools, and the game in the Play library."
+}

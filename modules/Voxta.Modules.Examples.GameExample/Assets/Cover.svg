@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1446"/>
+      <stop offset="0.55" stop-color="#3a1d6e"/>
+      <stop offset="1" stop-color="#0d6b5f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.35" r="0.6">
+      <stop offset="0" stop-color="#45e0b5" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#45e0b5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#sky)"/>
+  <rect width="640" height="360" fill="url(#glow)"/>
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.08" stroke-width="1">
+    <path d="M0 300 L640 220 M0 330 L640 260 M0 360 L640 300"/>
+    <path d="M80 360 L240 200 M220 360 L330 200 M360 360 L420 200 M500 360 L510 200"/>
+  </g>
+  <g transform="translate(440 64) scale(0.85)" fill="#ffffff">
+    <path d="M30 20h120c28 0 45 22 50 50l12 60c4 22-18 38-36 24l-34-28H38L4 154c-18 14-40-2-36-24l12-60C-15 42 2 20 30 20z" fill-opacity="0.92"/>
+    <g fill="#2a1a5c">
+      <rect x="32" y="64" width="40" height="12" rx="3"/>
+      <rect x="46" y="50" width="12" height="40" rx="3"/>
+      <circle cx="130" cy="58" r="8"/>
+      <circle cx="150" cy="78" r="8"/>
+      <circle cx="110" cy="78" r="8"/>
+      <circle cx="130" cy="98" r="8"/>
+    </g>
+  </g>
+  <text x="40" y="250" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#ffffff">Your Game</text>
+  <text x="42" y="290" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#cfe9ff" fill-opacity="0.85">Talk to Voxta characters in game</text>
+</svg>

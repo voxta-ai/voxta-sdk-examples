@@ -35,8 +35,10 @@ rest.
 | [`Voxta.Modules.Examples.TextToSpeechExample`](Voxta.Modules.Examples.TextToSpeechExample) | A text to speech service: how voices are listed and how audio is streamed to the client. Generates beeps instead of speech. |
 | [`Voxta.Modules.Examples.ChatAugmentationExample`](Voxta.Modules.Examples.ChatAugmentationExample) | A chat augmentation: reacting to messages, inferring custom actions, and preprocessing what the character is about to say. |
 | [`Voxta.Modules.Examples.ToolsExample`](Voxta.Modules.Examples.ToolsExample) | Tool calling: declaring tools with a JSON schema, classifying what each one is allowed to do, running them, and remembering a "yes, always". |
+| [`Voxta.Modules.Examples.GameExample`](Voxta.Modules.Examples.GameExample) | A game integration: a game mod talking to characters over HTTP, voiced replies as wav files, game actions as tools, the conversations as a chat bridge, and the game in the Play library. |
 
-The four are the same shape, so start from whichever is closest to what you are building.
+The first four are the same shape, so start from whichever is closest to what you are building. A game is its own
+kind: a chat bridge and a launcher rather than a service.
 
 ## Keys: augmentation keys and context keys
 

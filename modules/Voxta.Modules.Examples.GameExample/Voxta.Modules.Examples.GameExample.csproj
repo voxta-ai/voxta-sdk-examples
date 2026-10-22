@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!-- Dependencies next to the DLL, so Voxta can load the build folder as a dev folder. -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- BackgroundService: the shared framework Voxta already ships, not a package. -->
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <!-- ExcludeAssets="runtime": Voxta provides Voxta.* assemblies at runtime. -->
+        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.8" ExcludeAssets="runtime" />
+        <PackageReference Include="Voxta.Shared.ExternalProcesses" Version="1.13.0-alpha.8" ExcludeAssets="runtime" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Assets\Cover.svg" />
+    </ItemGroup>
+
+</Project>
