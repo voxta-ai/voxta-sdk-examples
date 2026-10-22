@@ -4,13 +4,13 @@
     "net10.0": {
       "Voxta.Sdk.Modules": {
         "type": "Direct",
-        "requested": "[1.13.0-alpha.2, )",
-        "resolved": "1.13.0-alpha.2",
-        "contentHash": "o0JgUCZce3C73W3why4N1/Pa3+IOwLqJSQt9iMuYkdJjKSUln/KoSUqpPrjwbeen7FvXWeEV1kuj2NkQkhyXsw==",
+        "requested": "[1.13.0-alpha.9, )",
+        "resolved": "1.13.0-alpha.9",
+        "contentHash": "w5nFNBgXkW13notVEAmnOuW2DXPhcTFvFxlbesROW3kxDc0vT98iCB1BatbuiuXVErr0pC2xHejFlU7Xj0o5Sg==",
         "dependencies": {
-          "Voxta.Abstractions": "1.13.0-alpha.2",
-          "Voxta.Common": "1.13.0-alpha.2",
-          "Voxta.Model": "1.13.0-alpha.2"
+          "Voxta.Abstractions": "1.13.0-alpha.9",
+          "Voxta.Common": "1.13.0-alpha.9",
+          "Voxta.Model": "1.13.0-alpha.9"
         }
       },
       "Microsoft.Extensions.Configuration": {
@@ -130,19 +130,19 @@
       },
       "Voxta.Abstractions": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.2",
-        "contentHash": "h4ZUsLkpiU6PXhJv7/5KyQA3x69dbqBdHHBfJ4wgZU3MXxy6TqBAzwdPLwF8sUbb5TkND1vj9Ee1GAjVXXwJxQ==",
+        "resolved": "1.13.0-alpha.9",
+        "contentHash": "JEzXJ/RfyVmj0zSuXxPrd2MdhF7peZsWITRBRC998oBuLdo/jOGB3COnIvufXFUl1KANV8YS5KHcRBONTizKcg==",
         "dependencies": {
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.13",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.13",
-          "Voxta.Common": "1.13.0-alpha.2",
-          "Voxta.Model": "1.13.0-alpha.2"
+          "Voxta.Common": "1.13.0-alpha.9",
+          "Voxta.Model": "1.13.0-alpha.9"
         }
       },
       "Voxta.Common": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.2",
-        "contentHash": "efg1sefeIGLTEtadtpgbApNkYxQRWNMl8/mrZSrMbzikwytvawXOaX4WmT+6fOlWuUK/rku2qSBpDusUQw0qqA==",
+        "resolved": "1.13.0-alpha.9",
+        "contentHash": "winNxI/85UIl4f/dZolEFt6UszSOpJpJU58GEYWP57Q/ErbTRMeRQDmBOi6OB+Sg8Smp4zXEnuHvwSU4pNjIPg==",
         "dependencies": {
           "Microsoft.Extensions.Http": "10.0.13",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.13"
@@ -150,8 +150,8 @@
       },
       "Voxta.Model": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.2",
-        "contentHash": "uRNp9U/IAiRSCWGzo743FqTZQs44fZ15HDA08xs6HMR+t4T6Y98efFDgYyHCB2BvMZOM5WCyflL/8JhqlOI+lw=="
+        "resolved": "1.13.0-alpha.9",
+        "contentHash": "i+SW7VnJPmawsPvF1AVie6tpYgT5lVBVvXNrSElpdjMx4EneIgCCVYZXkr72OA/0Bp+BkibNuLoXILUu7NAwOw=="
       }
     }
   }

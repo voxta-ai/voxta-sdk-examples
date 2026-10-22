@@ -28,7 +28,7 @@ jobs:
             dotnet restore "$project" --locked-mode
             dotnet publish "$project" -c Release --no-restore -p:VoxtaModulePack="$out"
             if [[ ! -f "$out/voxta-module.json" ]]; then
-              echo "::error::Nothing packed for $project: Voxta.Sdk.Modules is older than the VoxtaModulePack target (1.13.0-alpha.2)."
+              echo "::error::Nothing packed for $project: Voxta.Sdk.Modules is older than the VoxtaModulePack target (1.13.0-alpha.9)."
               exit 1
             fi
           done

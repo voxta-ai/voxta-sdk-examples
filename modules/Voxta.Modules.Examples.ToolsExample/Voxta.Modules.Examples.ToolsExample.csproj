@@ -12,7 +12,7 @@
 
     <ItemGroup>
         <!-- ExcludeAssets="runtime": Voxta provides Voxta.* assemblies at runtime. -->
-        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.6" ExcludeAssets="runtime" />
+        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.9" ExcludeAssets="runtime" />
     </ItemGroup>
 
 </Project>
