@@ -21,6 +21,8 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Assets\Cover.svg" />
+        <!-- The module's own character, put in the user's library by ServiceInstallationProvider. -->
+        <EmbeddedResource Include="Assets\Companion.voxpak" LogicalName="Companion.voxpak" />
     </ItemGroup>
 
 </Project>

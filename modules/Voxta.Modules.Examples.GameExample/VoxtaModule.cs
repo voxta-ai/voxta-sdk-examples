@@ -31,6 +31,8 @@ public class VoxtaModule : IVoxtaModule
             Hosting = ServiceDefinitionHosting.Builtin,
             Notes = $"The game mod connects to http://localhost:{GameBridgeServer.Port}/.",
             ModuleConfigurationProviderType = typeof(ModuleConfigurationProvider),
+            // Mira, the module's character, in the account's library on install and on every update.
+            ModuleInstallationProviderType = typeof(ServiceInstallationProvider),
         });
 
         // The game is the client: the module listens from startup, whether or not a conversation is open.

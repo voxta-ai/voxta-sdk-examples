@@ -1,0 +1,10 @@
+# Voxta packages (characters and their images): binary, and they get replaced whole.
+*.voxpak filter=lfs diff=lfs merge=lfs -text
+
+# Images (SVG stays text: it diffs).
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
+*.webp filter=lfs diff=lfs merge=lfs -text
+*.gif filter=lfs diff=lfs merge=lfs -text
+*.ico filter=lfs diff=lfs merge=lfs -text

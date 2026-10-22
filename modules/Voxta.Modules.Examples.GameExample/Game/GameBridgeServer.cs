@@ -124,11 +124,12 @@ public class GameBridgeServer(
         await EndAsync();
         var module = await FindModuleAsync(cancellationToken)
             ?? throw new InvalidOperationException("Enable the Game Integration example module in Voxta, and sign in if the account is encrypted");
+        // The one named, else the one picked in the settings, else the module's own.
         if (characterId == Guid.Empty)
         {
             var settings = new StaticSettingsSource(module.Configuration);
             if (!Guid.TryParse(settings.GetOptional(ModuleConfigurationProvider.CharacterId), out characterId))
-                throw new InvalidOperationException("Name a character, or pick one in the module settings");
+                characterId = GameConversation.CompanionId;
         }
         _conversation = await GameConversation.StartAsync(chatSessionHost, deployer, module.UserId, characterId, AudioFolder, logger, cancellationToken);
         return new { ok = true };

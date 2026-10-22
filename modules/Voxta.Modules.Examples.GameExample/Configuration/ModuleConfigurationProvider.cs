@@ -12,7 +12,7 @@ public class ModuleConfigurationProvider(IUnitOfWorkFactory unitOfWorkFactory)
     {
         Name = "CharacterId",
         Label = "Character",
-        Text = "Who answers when the game does not name a character.",
+        Text = "Who answers when the game does not name a character. Empty: Mira, the module's own.",
     };
 
     public static readonly FormPathField GamePath = new()

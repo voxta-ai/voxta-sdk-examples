@@ -22,6 +22,9 @@ public sealed class GameConversation : IAsyncDisposable
     // The module's own: a fixed id, versioned, owned by this module. Bump the version when the text changes.
     private static readonly Guid ScenarioId = new("3f0c6c1e-5b7a-4c39-9a52-6a1f1d0b2e47");
 
+    // Mira, the character the module ships (ServiceInstallationProvider): who answers when nobody else is picked.
+    public static readonly Guid CompanionId = new("8d4b2f60-1c3e-4a7b-9f15-6e2a0c9d7b31");
+
     private readonly ILocalChatSession _session;
     private readonly ILogger _logger;
     private readonly ConcurrentQueue<GameEvent> _events = new();
@@ -47,8 +50,8 @@ public sealed class GameConversation : IAsyncDisposable
         CancellationToken cancellationToken
     )
     {
-        // Written the first time, updated when the version changes, left alone once the user edits it. A module
-        // shipping characters too embeds a .voxpak exported from Voxta and calls DeployPackageAsync instead.
+        // Written the first time, updated when the version changes, left alone once the user edits it. Characters ship
+        // in a .voxpak instead (ServiceInstallationProvider); a scenario can also be built in code, like this one.
         var scenario = new Scenario
         {
             Name = "Game",
