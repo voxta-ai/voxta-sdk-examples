@@ -48,5 +48,7 @@ last line of a reply.
   from Voxta's built-in package.
 - The tools in `GameConversation`: one per thing the character can do in the game, each `ToolPermissionClass.InChat`,
   since nobody is at a keyboard to approve anything else.
-- If the game needs a mod installed, say how in setup steps: an `Onboarding.md` in the module, which Voxta walks the user
-  through after installing it (from Voxta 1.13.0-alpha.9).
+- If the game needs a mod installed, say how in setup steps, which Voxta walks the user through when installing it: an
+  `Onboarding.md` embedded in the module (`<EmbeddedResource Include="Onboarding.md" />`) and declared on its
+  definition, `Onboarding = ModuleOnboarding.EmbeddedResource(typeof(VoxtaModule), "Onboarding.md")` (from Voxta
+  1.13.0-alpha.10).
