@@ -29,16 +29,16 @@ public class VoxtaModule : IVoxtaModule
             },
             Pricing = ServiceDefinitionPricing.Free,
             Hosting = ServiceDefinitionHosting.Builtin,
-            Notes = $"The game mod connects to http://localhost:{GameBridgeServer.Port}/.",
+            Notes = $"The game mod connects to Voxta's port, /api/extensions/{GameBridgeServer.RoutePrefix}/, with an API key.",
             ModuleConfigurationProviderType = typeof(ModuleConfigurationProvider),
             // Mira, the module's character, in the account's library on install and on every update.
             ModuleInstallationProviderType = typeof(ServiceInstallationProvider),
         });
 
-        // The game is the client: the module listens from startup, whether or not a conversation is open.
+        // The game is the client: its requests come through Voxta's own port, whether or not a conversation is open.
         builder.Services.AddSingleton<GameBridgeServer>();
+        builder.Contribute<IModuleHttpEndpoints>(sp => sp.GetRequiredService<GameBridgeServer>());
         builder.Contribute<IChatBridge>(sp => sp.GetRequiredService<GameBridgeServer>());
-        builder.Services.AddHostedService(sp => sp.GetRequiredService<GameBridgeServer>());
         builder.Services.AddSingleton<GameLauncher>();
         builder.Contribute<ILauncher>(sp => sp.GetRequiredService<GameLauncher>());
     }

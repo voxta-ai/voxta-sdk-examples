@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <!-- BackgroundService: the shared framework Voxta already ships, not a package. -->
+        <!-- Microsoft.Extensions (GetRequiredService, logging): the shared framework Voxta already ships, not a package. -->
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Voxta.Abstractions.Connections;
 using Voxta.Abstractions.Exporting.Import;
 using Voxta.Abstractions.Model;
+using Voxta.Abstractions.Security;
 using Voxta.Model.Shared;
 using Voxta.Model.WebsocketMessages.ClientMessages;
 using Voxta.Model.WebsocketMessages.ServerMessages;
@@ -31,19 +32,22 @@ public sealed class GameConversation : IAsyncDisposable
     private readonly CancellationTokenSource _cts = new();
     private readonly Task _reader;
 
-    private GameConversation(ILocalChatSession session, ILogger logger)
+    private GameConversation(Guid userId, ILocalChatSession session, ILogger logger)
     {
+        UserId = userId;
         _session = session;
         _logger = logger;
         _reader = ReadAsync(_cts.Token);
     }
 
+    /// <summary>The account it runs as: the one whose key the game called with.</summary>
+    public Guid UserId { get; }
+
     public bool Closed => _reader.IsCompleted;
 
     public static async Task<GameConversation> StartAsync(
-        ILocalChatSessionHost host,
+        IUserContext user,
         IAppResourceDeployer deployer,
-        Guid userId,
         Guid characterId,
         string audioFolder,
         ILogger logger,
@@ -60,11 +64,10 @@ public sealed class GameConversation : IAsyncDisposable
             Template = "{{ char }} and {{ user }} meet in the game world. {{ char }} speaks briefly, as people do face to face.",
         };
         scenario.SetPublishedId(ScenarioId);
-        await deployer.DeployScenarioAsync(userId, scenario, cancellationToken);
+        await deployer.DeployScenarioAsync(user.UserId, scenario, cancellationToken);
 
-        var session = await host.StartAsync(new LocalChatSessionRequest
+        var session = await user.StartChatAsync(new LocalChatSessionRequest
         {
-            UserId = userId,
             Client = VoxtaModule.ServiceName,
             Capabilities = new ClientCapabilities
             {
@@ -76,6 +79,8 @@ public sealed class GameConversation : IAsyncDisposable
                 AudioInput = AudioInputClientCapabilities.None,
                 VisionCapture = VisionCaptureClientCapabilities.Disabled,
             },
+            // What the player says into that microphone is their turn. Playback is the game's to report (/played).
+            SubmitTranscripts = true,
             Start = new ClientStartChatMessage
             {
                 CharacterId = characterId,
@@ -95,7 +100,7 @@ public sealed class GameConversation : IAsyncDisposable
                 ],
             },
         }, cancellationToken);
-        return new GameConversation(session, logger);
+        return new GameConversation(user.UserId, session, logger);
     }
 
     // Everything since the last call, in order.
@@ -146,12 +151,14 @@ public sealed class GameConversation : IAsyncDisposable
 
                     case ServerToolCallRequestMessage call:
                         _events.Enqueue(new GameEvent("action", Guid.Empty, call.Name, Arguments: call.Arguments));
-                        // Answered now: the model is waiting, and the game acts it out on its own time.
+                        // Answered now: the model is waiting, and the game acts it out on its own time. The line said
+                        // with the call was the reply, so the model is not asked for another.
                         await _session.SendAsync(new ClientToolCallResultMessage
                         {
                             SessionId = Guid.Empty,
                             RequestId = call.RequestId,
-                            Result = "Done. It is happening in the game; you have already said your line.",
+                            Result = "Done. It is happening in the game.",
+                            EndsTurn = true,
                         });
                         break;
 
