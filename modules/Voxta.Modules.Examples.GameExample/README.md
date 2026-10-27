@@ -31,10 +31,10 @@ Every request carries `Authorization: Bearer <key>`, and the conversation runs a
 key from its config, where the player can paste one from Voxta's API keys page (with the Chats permission). Without
 one, or when Voxta answers 401 or 403, it asks for one by device authorization:
 
-1. `POST /api/device/code` with `{"client_id":"voxta","scope":"chat","label":"My Game"}`: show the player "enter
-   `user_code` at `verification_url`".
+1. `POST /api/device/code` with `{"client_id":"voxta","scope":"chat","label":"My Game","prompt":true}`: show the
+   player "enter `user_code` at `verification_url`", plus "or pick `binding_message` in Voxta" when `prompted` is true.
 2. `POST /api/device/poll` with `{"device_code":"..."}` every few seconds: 204 while waiting, 200 with `token` once
-   approved (save it to the config), 400 when the code expired (ask for a new one).
+   approved (save it to the config), 400 when the code expired (ask for a new one) or was denied (`access_denied`).
 
 The player carries the code: show it, never open the device page with it filled in.
 
