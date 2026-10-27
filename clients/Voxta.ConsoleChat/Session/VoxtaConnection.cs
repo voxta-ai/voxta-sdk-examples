@@ -198,11 +198,14 @@ public class VoxtaConnection : IAsyncDisposable
         var token = _tokenStore.Load();
         if (!await _deviceAuthorization.ValidateTokenAsync(token, cancellationToken))
         {
-            var code = await _deviceAuthorization.GetDeviceCodeAsync(ClientName, cancellationToken);
-            progress.Report(new ConnectionProgress("Waiting for browser authentication...", code.UserCode, code.VerificationUrl));
+            // Prompt: on the Voxta machine, signed-in users are asked to approve, so nobody types the code.
+            var code = await _deviceAuthorization.GetDeviceCodeAsync(ClientName, cancellationToken, prompt: true);
+            progress.Report(code.Prompted
+                ? new ConnectionProgress("Approve in Voxta, or enter the code in a browser...", code.UserCode, code.VerificationUrl, code.BindingMessage)
+                : new ConnectionProgress("Waiting for browser authentication...", code.UserCode, code.VerificationUrl));
 
             token = await _deviceAuthorization.WaitForTokenAsync(code, cancellationToken)
-                ?? throw new InvalidOperationException("Authentication failed");
+                ?? throw new InvalidOperationException("Authorization was denied in Voxta");
             _tokenStore.Save(token);
         }
 

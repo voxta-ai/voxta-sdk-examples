@@ -23,5 +23,6 @@ cd clients/Voxta.ConsoleChat
 dotnet run
 ```
 
-The first run opens a browser to authorize the app against your Voxta Server; the token is then
-kept on disk. The server URL is in `appsettings.json`.
+The first run asks you to authorize the app against your Voxta Server. On the Voxta machine, Voxta
+shows a prompt: pick the number the console shows. Otherwise, enter the code at the URL it shows.
+The token is then kept on disk. The server URL is in `appsettings.json`.

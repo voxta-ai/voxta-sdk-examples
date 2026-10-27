@@ -53,7 +53,9 @@ internal static class StatusScreen
         public void Report(ConnectionProgress value) => Tui.Invoke(() =>
         {
             status.Text = value.Status;
-            if (value.DeviceCode != null)
+            if (value.BindingMessage != null)
+                code.Text = $"Pick {value.BindingMessage} in Voxta.\n\nOr enter code {value.DeviceCode} at {value.DeviceUrl}";
+            else if (value.DeviceCode != null)
                 code.Text = $"Code: {value.DeviceCode}\nURL:  {value.DeviceUrl}";
         });
     }
