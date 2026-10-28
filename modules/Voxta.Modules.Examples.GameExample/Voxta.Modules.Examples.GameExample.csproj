@@ -15,7 +15,7 @@
 
     <ItemGroup>
         <!-- ExcludeAssets="runtime": Voxta provides Voxta.* assemblies at runtime. -->
-        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.12" ExcludeAssets="runtime" />
+        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.14" ExcludeAssets="runtime" />
         <PackageReference Include="Voxta.Shared.ExternalProcesses" Version="1.13.0-alpha.10" ExcludeAssets="runtime" />
     </ItemGroup>
 
