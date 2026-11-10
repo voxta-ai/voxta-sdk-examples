@@ -1,45 +1,51 @@
 {
   "version": 1,
   "dependencies": {
-    "net10.0": {
+    "net11.0": {
       "Voxta.Sdk.Modules": {
         "type": "Direct",
-        "requested": "[1.13.0-alpha.14, )",
-        "resolved": "1.13.0-alpha.14",
-        "contentHash": "VC6vJiyzIvlEnK2qSuCRD+58oEl+Xifr8HbpK3oQl02ZxS3TLRno66C68eXsftVBy5hnO3UJ7x5isv4z0heQ4w==",
+        "requested": "[1.13.0-beta.1, )",
+        "resolved": "1.13.0-beta.1",
+        "contentHash": "H1I8JwTaTDy6N9O26mQ+O0uDe5ZzkT1aMisC+SICyq/zMsxoIZOOY+eaPZzVw06qF8yz5ogztBi3jwO78ZE0AQ==",
         "dependencies": {
-          "Voxta.Abstractions": "1.13.0-alpha.14",
-          "Voxta.Common": "1.13.0-alpha.14",
-          "Voxta.Model": "1.13.0-alpha.14"
+          "Voxta.Abstractions": "1.13.0-beta.1",
+          "Voxta.Common": "1.13.0-beta.1",
+          "Voxta.Model": "1.13.0-beta.1"
         }
       },
       "Voxta.Shared.ExternalProcesses": {
         "type": "Direct",
-        "requested": "[1.13.0-alpha.10, )",
-        "resolved": "1.13.0-alpha.10",
-        "contentHash": "AcG/LBUZec6H8fu29zy7NG3KmPDK7U5H6ugdhL8Z34HHpPiS8MlZLPgvUvrK3frjNMBG3kCMaKYKmTGWT1boqw==",
+        "requested": "[1.13.0-beta.1, )",
+        "resolved": "1.13.0-beta.1",
+        "contentHash": "IuqyBb/AS0v3TCP+vkIribpzrUN4hS6aAnizmlXr72NJHt1A40DpzuCKatx5tABlUPLHSZ4YH8Z8mgX/KD7fKw==",
         "dependencies": {
-          "Voxta.Common": "1.13.0-alpha.10"
+          "Voxta.Common": "1.13.0-beta.1"
         }
+      },
+      "Profanity.Detector": {
+        "type": "Transitive",
+        "resolved": "0.1.8",
+        "contentHash": "4rfonJb74vncmdyobz71Wm0N5YeKtReOMIr0P8z/IRP9iJsVcoRfFFfgANopaFjmHI1lZyZL+ps8AKwF1rNjHg=="
       },
       "Voxta.Abstractions": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.14",
-        "contentHash": "0TPzV+hPQZrR2zJUmG2YttI9NHTx9zSZ3TLHtfhYtwNUy6jxRWiBq90kDNrgKyhBIOT37d1r9pBf77igdIKK7A==",
+        "resolved": "1.13.0-beta.1",
+        "contentHash": "VRGCEW+N0j86R0Ni1c17IEZe73Zcaz6i+qHX1dAuFRRoYBtiAEDsbH/ETFbqRKSVkpoAwUJ2IoXbk6RrDFo52w==",
         "dependencies": {
-          "Voxta.Common": "1.13.0-alpha.14",
-          "Voxta.Model": "1.13.0-alpha.14"
+          "Profanity.Detector": "0.1.8",
+          "Voxta.Common": "1.13.0-beta.1",
+          "Voxta.Model": "1.13.0-beta.1"
         }
       },
       "Voxta.Common": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.14",
-        "contentHash": "Q/ubu1uucwkcExBbEA357iGCowsERJwLqj+yBOg8kCIX9OANxhHQWYuzxOiLjNxUMS1Jf0DvgcUPL8TO4biCdQ=="
+        "resolved": "1.13.0-beta.1",
+        "contentHash": "w29ZoVAurpkzTPgmqWgdR9sz2yGrIeOIlogTNO8JQtOHWBwkNPUSvoxGVfqhWJkhtHKQyplvruq/9ymLNlLIyQ=="
       },
       "Voxta.Model": {
         "type": "Transitive",
-        "resolved": "1.13.0-alpha.14",
-        "contentHash": "aecrdHo4ZbFNBRGAVdnXS2wHZWewxfzn95tdQEr88/f/KkkBe16giWsxxGo6z3OHm3jAQI0Re/JAXazOVwi1kw=="
+        "resolved": "1.13.0-beta.1",
+        "contentHash": "ZcmRg6xMi/43EZH9KNGJhEKk8CCtK7V71y291/KpaBiA1jMDa2480NFazTF22QSl9z8yyTi6/RY1uKAqN644yg=="
       }
     }
   }

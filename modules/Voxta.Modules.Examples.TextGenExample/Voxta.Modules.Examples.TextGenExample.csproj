@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <!-- Dependencies next to the DLL, so Voxta can load the build folder as a dev folder. -->
@@ -10,10 +10,10 @@
 
     <ItemGroup>
         <!-- ExcludeAssets="runtime": Voxta provides Voxta.* assemblies at runtime. -->
-        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-alpha.14" ExcludeAssets="runtime" />
+        <PackageReference Include="Voxta.Sdk.Modules" Version="1.13.0-beta.1" ExcludeAssets="runtime" />
         <!-- Base classes for text generation services: the client contract, TextGenServiceBase,
              the shared preset fields, and the presets/testing providers. -->
-        <PackageReference Include="Voxta.Shared.LLMUtils" Version="1.13.0-alpha.14" />
+        <PackageReference Include="Voxta.Shared.LLMUtils" Version="1.13.0-beta.1" />
     </ItemGroup>
 
     <!-- The module logo is loaded from the assembly at runtime, so it must be embedded. -->

@@ -40,7 +40,7 @@ public class ChatAugmentationsService(
         CancellationToken cancellationToken
     )
     {
-        var chatStyles = ChatToolSettingsContributions.GetChatStyles(ModuleConfiguration);
+        var chatStyles = ChatToolSettingsContributions.GetChatStyles(ModuleConfigurationProvider.AutoEnabledFor.Get(ModuleConfiguration));
         // Name, label and description come off the module's own table rather than being written again
         // here: the picker's catalog is built from that table, and a plan that spelled them out itself
         // would be a second copy to keep in step.

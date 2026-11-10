@@ -2,6 +2,8 @@ using System.Diagnostics.CodeAnalysis;
 using Voxta.Abstractions.Registration;
 using Voxta.Abstractions.Security;
 using Voxta.Abstractions.Services.Agents;
+using Voxta.Abstractions.Services.ChatAugmentations;
+using Voxta.Model.Shared;
 using Voxta.Model.Shared.Forms;
 
 namespace Voxta.Modules.Examples.ToolsExample.Configuration;
@@ -23,6 +25,13 @@ public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IMod
         new(ToolsExampleConstants.RollDiceToolName, "Roll Dice"),
         new(ToolsExampleConstants.WriteNoteToolName, "Write Note", EnabledByDefault: false),
     ];
+
+    /// <summary>
+    /// Which chats the tools are offered in. Starts at assistants only: a roleplay character calling tools
+    /// mid-scene is usually not what was wanted, and a character can still ask for the augmentation key by name.
+    /// </summary>
+    public static readonly ModuleWideAugmentationAutoEnabledSetting AutoEnabledFor =
+        ChatToolSettingsContributions.AutoEnabledFor(AugmentationAutoEnabledFor.Assistants);
 
     public static readonly FormTextField NotesFolder = new()
     {
@@ -56,7 +65,7 @@ public class ModuleConfigurationProvider : ModuleConfigurationProviderBase, IMod
                 "Example Tools",
                 text: $"Two tools the AI can call during a reply. Augmentation key: `{ToolsExampleConstants.AugmentationKey}`"
             ),
-            ChatToolSettingsContributions.GetFormFields(Tools),
+            ChatToolSettingsContributions.GetFormFields(Tools, AutoEnabledFor),
             NotesFolder,
             AlwaysAllow
         );

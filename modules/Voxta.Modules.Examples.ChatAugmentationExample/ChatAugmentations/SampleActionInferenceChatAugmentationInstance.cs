@@ -51,7 +51,7 @@ public class SampleActionInferenceChatAugmentationInstance(
         {
             case { ContextKey: VoxtaModule.ServiceName, Value: "date_and_time" }:
                 logger.LogInformation("Handling action inference 'date_and_time' for session {SessionId}", session.SessionId);
-                await session.SendSecretAsync($"Current date and time: {TimeProvider.System.GetLocalNow().ToString()}", cancellationToken);
+                await session.SendSecretAsync($"Current date and time: {TimeProvider.System.GetLocalNow().ToString()}", cancellationToken: cancellationToken);
                 await session.TriggerReplyAsync(cancellationToken);
                 return true;
             default:
