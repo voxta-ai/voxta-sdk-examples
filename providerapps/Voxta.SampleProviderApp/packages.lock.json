@@ -103,13 +103,13 @@
       },
       "Voxta.Providers.Host": {
         "type": "Direct",
-        "requested": "[1.13.0-beta.1, )",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "bt7yml40h4wlqaZOgqrz1/jugHK1ki+jqUuOTXfI1lV3hhNlmvkOg2AsJwudUTtgcuUQKvOhUoLWuiIiVEPYWg==",
+        "requested": "[1.13.0, )",
+        "resolved": "1.13.0",
+        "contentHash": "bdW/o3P70LWzqyYldKz92nAxd/xndwHR2pFiKmp+czNWHPWko6vMBvVCywkWMLcpcLHw+UQiYi7A0Fu5FtSUCQ==",
         "dependencies": {
           "Microsoft.Extensions.Options.ConfigurationExtensions": "11.0.0",
           "Microsoft.Extensions.Options.DataAnnotations": "11.0.0",
-          "Voxta.Client": "1.13.0-beta.1"
+          "Voxta.Client": "1.13.0"
         }
       },
       "Microsoft.AspNetCore.Connections.Abstractions": {
@@ -245,40 +245,48 @@
         "resolved": "0.1.8",
         "contentHash": "4rfonJb74vncmdyobz71Wm0N5YeKtReOMIr0P8z/IRP9iJsVcoRfFFfgANopaFjmHI1lZyZL+ps8AKwF1rNjHg=="
       },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "8.0.6",
+        "contentHash": "BvSpVBsVN9b+Y+wONbvJOHd1HjXQf33+XiC28ZMOwRsYb42mz3Q8YHnpTSwpwJLqYCMqM+0UUVC3V+pi25XfkQ=="
+      },
       "Voxta.Abstractions": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "VRGCEW+N0j86R0Ni1c17IEZe73Zcaz6i+qHX1dAuFRRoYBtiAEDsbH/ETFbqRKSVkpoAwUJ2IoXbk6RrDFo52w==",
+        "resolved": "1.13.0",
+        "contentHash": "1rhAqU1IFn1WaVx3wqlT2qCeFNWYviQYmPW5s1LwPt1EBLRGvNkYc23KB3RecwebBwgUZWNuW9HYus6EQ984sg==",
         "dependencies": {
           "Profanity.Detector": "0.1.8",
-          "Voxta.Common": "1.13.0-beta.1",
-          "Voxta.Model": "1.13.0-beta.1"
+          "Voxta.Common": "1.13.0",
+          "Voxta.Model": "1.13.0"
         }
       },
       "Voxta.Client": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "/p9oK6IiIsMtI8Vs7GeBzq8khBlui9299qAF/0v929NFxLXv3GYpB8bo6k5c7DAQ0AoCvQzmjJS63wvioEbZKg==",
+        "resolved": "1.13.0",
+        "contentHash": "6kHBzO3ji2zdUJPLqRQcT1/68zp3zJ7ElJZfyUQpWRDQeXp2b9XDk1WBBThvYPDKHW82NUbiMEI3nU9nlskfJw==",
         "dependencies": {
           "Microsoft.AspNetCore.SignalR.Client": "11.0.0",
           "Microsoft.Extensions.Http": "11.0.0",
           "Microsoft.Extensions.Options.DataAnnotations": "11.0.0",
-          "Voxta.Abstractions": "1.13.0-beta.1",
-          "Voxta.Model": "1.13.0-beta.1"
+          "Voxta.Abstractions": "1.13.0",
+          "Voxta.Model": "1.13.0"
         }
       },
       "Voxta.Common": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "w29ZoVAurpkzTPgmqWgdR9sz2yGrIeOIlogTNO8JQtOHWBwkNPUSvoxGVfqhWJkhtHKQyplvruq/9ymLNlLIyQ==",
+        "resolved": "1.13.0",
+        "contentHash": "hBWaIjYu9iSOocw46UIuUsnemWKR79xrJHua1d0hweACJhR4lHf/ik9EMdzp0G+Hq963m+YM0ywo4AXJZYhoqQ==",
         "dependencies": {
           "Microsoft.Extensions.Http": "11.0.0"
         }
       },
       "Voxta.Model": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "ZcmRg6xMi/43EZH9KNGJhEKk8CCtK7V71y291/KpaBiA1jMDa2480NFazTF22QSl9z8yyTi6/RY1uKAqN644yg=="
+        "resolved": "1.13.0",
+        "contentHash": "KIq/8hF4ZtOfLPqNX1NCZr+qWVlDJwVJ9aDD2KxLh0GM1b3FB2ddYcdO/5NPPJiEw+UA9mAPb8j4OqoMtpHtgw==",
+        "dependencies": {
+          "System.Text.Json": "[8.0.6, 9.0.0)"
+        }
       }
     }
   }

@@ -4,22 +4,22 @@
     "net11.0": {
       "Voxta.Sdk.Modules": {
         "type": "Direct",
-        "requested": "[1.13.0-beta.1, )",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "H1I8JwTaTDy6N9O26mQ+O0uDe5ZzkT1aMisC+SICyq/zMsxoIZOOY+eaPZzVw06qF8yz5ogztBi3jwO78ZE0AQ==",
+        "requested": "[1.13.0, )",
+        "resolved": "1.13.0",
+        "contentHash": "CcY2VS+4YkJSvzeqVvjsD58HGLAhhQmrctnx5j/XH931BzNkPAtoIttFCUe2b4aUvp/Bux3RR3ERbxrSVSvqdQ==",
         "dependencies": {
-          "Voxta.Abstractions": "1.13.0-beta.1",
-          "Voxta.Common": "1.13.0-beta.1",
-          "Voxta.Model": "1.13.0-beta.1"
+          "Voxta.Abstractions": "1.13.0",
+          "Voxta.Common": "1.13.0",
+          "Voxta.Model": "1.13.0"
         }
       },
       "Voxta.Shared.ExternalProcesses": {
         "type": "Direct",
-        "requested": "[1.13.0-beta.1, )",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "IuqyBb/AS0v3TCP+vkIribpzrUN4hS6aAnizmlXr72NJHt1A40DpzuCKatx5tABlUPLHSZ4YH8Z8mgX/KD7fKw==",
+        "requested": "[1.13.0, )",
+        "resolved": "1.13.0",
+        "contentHash": "dxnKoF1Wl+w3SEwJTwQiC/abcJZoHDriPDpoDeXrbJPOyPzVH3BDnfgUhRnfMq5kwoeWgECj4mB9dlCGxoe9GQ==",
         "dependencies": {
-          "Voxta.Common": "1.13.0-beta.1"
+          "Voxta.Common": "1.13.0"
         }
       },
       "Profanity.Detector": {
@@ -27,25 +27,33 @@
         "resolved": "0.1.8",
         "contentHash": "4rfonJb74vncmdyobz71Wm0N5YeKtReOMIr0P8z/IRP9iJsVcoRfFFfgANopaFjmHI1lZyZL+ps8AKwF1rNjHg=="
       },
+      "System.Text.Json": {
+        "type": "Transitive",
+        "resolved": "8.0.6",
+        "contentHash": "BvSpVBsVN9b+Y+wONbvJOHd1HjXQf33+XiC28ZMOwRsYb42mz3Q8YHnpTSwpwJLqYCMqM+0UUVC3V+pi25XfkQ=="
+      },
       "Voxta.Abstractions": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "VRGCEW+N0j86R0Ni1c17IEZe73Zcaz6i+qHX1dAuFRRoYBtiAEDsbH/ETFbqRKSVkpoAwUJ2IoXbk6RrDFo52w==",
+        "resolved": "1.13.0",
+        "contentHash": "1rhAqU1IFn1WaVx3wqlT2qCeFNWYviQYmPW5s1LwPt1EBLRGvNkYc23KB3RecwebBwgUZWNuW9HYus6EQ984sg==",
         "dependencies": {
           "Profanity.Detector": "0.1.8",
-          "Voxta.Common": "1.13.0-beta.1",
-          "Voxta.Model": "1.13.0-beta.1"
+          "Voxta.Common": "1.13.0",
+          "Voxta.Model": "1.13.0"
         }
       },
       "Voxta.Common": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "w29ZoVAurpkzTPgmqWgdR9sz2yGrIeOIlogTNO8JQtOHWBwkNPUSvoxGVfqhWJkhtHKQyplvruq/9ymLNlLIyQ=="
+        "resolved": "1.13.0",
+        "contentHash": "hBWaIjYu9iSOocw46UIuUsnemWKR79xrJHua1d0hweACJhR4lHf/ik9EMdzp0G+Hq963m+YM0ywo4AXJZYhoqQ=="
       },
       "Voxta.Model": {
         "type": "Transitive",
-        "resolved": "1.13.0-beta.1",
-        "contentHash": "ZcmRg6xMi/43EZH9KNGJhEKk8CCtK7V71y291/KpaBiA1jMDa2480NFazTF22QSl9z8yyTi6/RY1uKAqN644yg=="
+        "resolved": "1.13.0",
+        "contentHash": "KIq/8hF4ZtOfLPqNX1NCZr+qWVlDJwVJ9aDD2KxLh0GM1b3FB2ddYcdO/5NPPJiEw+UA9mAPb8j4OqoMtpHtgw==",
+        "dependencies": {
+          "System.Text.Json": "[8.0.6, 9.0.0)"
+        }
       }
     }
   }
