@@ -38,7 +38,7 @@ jobs:
 
       - run: dotnet build -c Release
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: modules
           path: dist/
