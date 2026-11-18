@@ -21,7 +21,7 @@ jobs:
           # The .voxpak and images are in LFS: without it the build embeds the pointers.
           lfs: true
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
