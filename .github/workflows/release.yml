@@ -16,12 +16,12 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # The .voxpak and images are in LFS: without it the build embeds the pointers.
           lfs: true
 
-      - uses: actions/setup-dotnet@v5
+      - uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -58,7 +58,7 @@ jobs:
           fi
 
       # Signed proof that this workflow built the zip from this commit: gh attestation verify <zip> --repo <owner/repo>
-      - uses: actions/attest-build-provenance@v3
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: dist/*.zip
 
