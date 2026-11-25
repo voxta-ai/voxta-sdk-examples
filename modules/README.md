@@ -162,3 +162,6 @@ module of your own: same build settings, same workflows.
 - Voxta users add the repository in **Add Modules → Module Registries** (`owner/repo`) and install
   from there.
 - `packages.lock.json` pins every package; CI restores with `--locked-mode`.
+- A `voxta-hub.json` at the repository root lists it on [Voxta Hub](https://hub.voxta.ai/modules), with a page,
+  an Install button and links from the characters that use its augmentation keys. The template has one and says
+  how to submit it.
